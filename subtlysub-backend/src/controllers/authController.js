@@ -15,13 +15,13 @@ export const login = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(401).json({ message: "Неправильний логін або пароль" });
+      return res.status(401).json({ message: "Invalid username or password" });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return res.status(401).json({ message: "Неправильний логін або пароль" });
+      return res.status(401).json({ message: "Invalid username or password" });
     }
 
     // generate jwt token
@@ -31,8 +31,8 @@ export const login = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    res.status(200).json({ result: "Успіх", token });
+    res.status(200).json({ result: "Login successful", token });
   } catch {
-    res.status(500).json({ message: "Помилка при вході" });
+    res.status(500).json({ message: "Error during login" });
   }
 };

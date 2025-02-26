@@ -14,7 +14,7 @@ export const createUser = async (req, res) => {
     });
 
     if (existingUser) {
-      return res.status(400).json({ message: "Користувач з таким email вже існує" });
+      return res.status(400).json({ message: "Username is already in use" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -30,7 +30,7 @@ export const createUser = async (req, res) => {
     res.status(201).json(safeUser);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Помилка при створенні користувача", error });
+    res.status(500).json({ message: "Error while creating a user", error });
   }
 };
 
@@ -38,10 +38,10 @@ export const getUsers = async (req, res) => {
   try {
     const users = await prisma.user.findMany();
 
-    const { password: _, ...safeUser } = user;
-    res.status(200).json(safeUser);
+    const safeUsers = users.map(({ password, ...userData }) => userData);
+    res.status(200).json(safeUsers);
   } catch (error) {
-    res.status(500).json({ message: "Помилка при отриманні користувачів" });
+    res.status(500).json({ message: "Error while getting users" });
   }
 };
 
@@ -56,12 +56,12 @@ export const getUserById = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ message: "Користувач не знайдений" });
+      return res.status(404).json({ message: "User not found" });
     }
 
     const { password: _, ...safeUser } = user;
     res.status(200).json(safeUser);
   } catch (error) {
-    res.status(500).json({ message: "Помилка при отриманні користувача" });
+    res.status(500).json({ message: "Error while getting user" });
   }
 }
