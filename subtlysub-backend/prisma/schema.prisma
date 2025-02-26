@@ -25,14 +25,24 @@ model Role {
   users         User[]
 }
 
+model Collection {
+  id            String        @id @default(uuid())
+  name          String
+  ownerId       String
+  owner         User          @relation(fields: [ownerId], references: [id])
+  posts         Post[]
+}
+
 model Post {
   id            String        @id @default(uuid())
   title         String
   description   String
   tags          Tag[]
+  collections   Collection[]
   authorId      String
   author        User          @relation(fields: [authorId], references: [id])
   cards         Card[]
+  pending       Boolean
   createdAt     DateTime      @default(now())
 }
 
