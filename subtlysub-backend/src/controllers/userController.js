@@ -30,7 +30,7 @@ export const createUser = async (req, res) => {
     res.status(201).json(safeUser);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Error while creating a user", error });
+    res.status(500).json({ message: "Error creating user", error });
   }
 };
 
@@ -41,7 +41,7 @@ export const getUsers = async (req, res) => {
     const safeUsers = users.map(({ password, ...userData }) => userData);
     res.status(200).json(safeUsers);
   } catch (error) {
-    res.status(500).json({ message: "Error while getting users" });
+    res.status(500).json({ message: "Error fetching users" });
   }
 };
 
@@ -62,6 +62,6 @@ export const getUserById = async (req, res) => {
     const { password: _, ...safeUser } = user;
     res.status(200).json(safeUser);
   } catch (error) {
-    res.status(500).json({ message: "Error while getting user" });
+    res.status(500).json({ message: "Error fetching user" });
   }
 }

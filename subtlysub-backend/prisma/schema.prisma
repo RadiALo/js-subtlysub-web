@@ -42,7 +42,7 @@ model Post {
   authorId      String
   author        User          @relation(fields: [authorId], references: [id])
   cards         Card[]
-  pending       Boolean
+  pending       Boolean       @default(true)
   createdAt     DateTime      @default(now())
 }
 
@@ -56,6 +56,6 @@ model Card {
 
 model Tag {
   id            Int           @id @default(autoincrement())
-  slug          String        @unique
+  name          String        @unique
   posts         Post[]
 }
