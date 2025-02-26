@@ -26,10 +26,11 @@ export const createUser = async (req, res) => {
         password: hashedPassword,
       },
     });
-
-    res.status(201).json(user);
+    const { password: _, ...safeUser } = user;
+    res.status(201).json(safeUser);
   } catch (error) {
-    res.status(500).json({ message: "Помилка при створенні користувача" });
+    console.log(error);
+    res.status(500).json({ message: "Помилка при створенні користувача", error });
   }
 };
 
@@ -37,7 +38,8 @@ export const getUsers = async (req, res) => {
   try {
     const users = await prisma.user.findMany();
 
-    res.status(200).json(users);
+    const { password: _, ...safeUser } = user;
+    res.status(200).json(safeUser);
   } catch (error) {
     res.status(500).json({ message: "Помилка при отриманні користувачів" });
   }
@@ -57,7 +59,8 @@ export const getUserById = async (req, res) => {
       return res.status(404).json({ message: "Користувач не знайдений" });
     }
 
-    res.status(200).json(user);
+    const { password: _, ...safeUser } = user;
+    res.status(200).json(safeUser);
   } catch (error) {
     res.status(500).json({ message: "Помилка при отриманні користувача" });
   }
