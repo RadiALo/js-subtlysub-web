@@ -2,6 +2,29 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+async function fetchTags(tags) {
+  const existingTags = await prisma.tag.findMany({
+    where: {
+      name: {
+        in: tags,
+      },
+    },
+  });
+
+  const existingTagNames = existingTags.map((tag) => tag.name);
+  const newTags = tags.filter((tag) => !existingTagNames.includes(tag));
+
+  const createdTags = await Promise.all(
+    newTags.map(async (tag) => {
+      return await prisma.tag.create({ data: { name: tag } });
+    })
+  );
+
+  const allTags = [...existingTags, ...createdTags];
+
+  return allTags;
+}
+
 export const createPost = async (req, res) => {
   try {
     const { title, description, tags, cards } = req.body;
@@ -22,19 +45,7 @@ export const createPost = async (req, res) => {
       },
     });
 
-    const existingTagNames = existingTags.map((tag) => tag.name);
-
-    const newTags = tags.filter((tag) => !existingTagNames.includes(tag));
-
-    const createdTegs = await Promise.all(newTags.map(async (tag) => {
-      return await prisma.tag.create({
-        data: {
-          name: tag
-        },
-      });
-    }));
-
-    const allTags = [...existingTags, ...createdTegs];
+    tags = await fetchTags(tags);
 
     const post = await prisma.post.create({
       data: {
@@ -42,7 +53,7 @@ export const createPost = async (req, res) => {
         description,
         authorId: req.user.id,
         tags: {
-          connect: allTags.map((tag) => ({ id: tag.id })),
+          connect: tags.map((tag) => ({ id: tag.id })),
         },
         words: {
           create: cards.map((card) => ({
@@ -85,5 +96,46 @@ export const getPostById = async (req, res) => {
     res.json(post);
   } catch (error) {
     res.status(500).json({ message: "Error fetching post", error });
+  }
+}
+
+export const updatePost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, tags, cards } = req.body;
+
+    const existingPost = await prisma.post.findUnique({
+      where: { id },
+      include: { tags: true, words: true },
+    });
+
+    if (!existingPost) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    tags = await fetchTags(tags);
+
+    const updatedPost = await prisma.post.update({
+      where: { id },
+      data: {
+        title,
+        description,
+        tags: {
+          set: tags.map((tag) => ({ id: tag.id }))
+        },
+        words: {
+          deleteMany: {},
+          create: cards.map((card) => ({
+            word: card.word,
+            translation: card.translation,
+          })),
+        }
+      }
+    });
+
+    res.json(updatedPost);
+
+  } catch (error) {
+    res.status(500).json({ message: "Error updating post", error });
   }
 }
