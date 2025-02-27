@@ -113,6 +113,10 @@ export const updatePost = async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
+    if (post.authorId !== req.user.id && req.role !== "admin" && req.role !== "moderator") {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
     tags = await fetchTags(tags);
 
     const updatedPost = await prisma.post.update({
