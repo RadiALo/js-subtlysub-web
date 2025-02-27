@@ -156,6 +156,14 @@ export const deletePost = async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
+    if (post.authorId !== req.user.id && req.role !== "admin" && req.role !== "moderator") {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    await prisma.card.deleteMany({
+      where: { postId: id },
+    });
+
     await prisma.post.delete({
       where: { id },
     });
