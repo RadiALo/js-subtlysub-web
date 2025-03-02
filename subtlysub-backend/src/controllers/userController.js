@@ -27,6 +27,18 @@ export const createUser = async (req, res) => {
       },
     });
     const { password: _, ...safeUser } = user;
+
+    const favoriteCollection = await prisma.collection.create({
+      data: {
+        name: "Favorites",
+        ownerId: {
+          connect: {
+            id: user.id,
+          },
+        },
+      },
+    });
+
     res.status(201).json(safeUser);
   } catch (error) {
     console.log(error);
