@@ -36,3 +36,49 @@ export const login = async (req, res) => {
     res.status(500).json({ message: "Error during login" });
   }
 };
+
+export const register = async (req, res) => {
+  try {
+    const { email, username, password } = req.body;
+
+    const alreadyExist = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { username }, 
+          { email }
+        ]
+      }
+    });
+
+    if (alreadyExist) {
+      return res.status(409).json({ message: "Username or email already exists"})
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await prisma.user.create({
+      data: {
+        username,
+        email,
+        password: hashedPassword,
+      },
+    });
+    const { password: _, ...safeUser } = user;
+
+    const favoriteCollection = await prisma.collection.create({
+      data: {
+        name: "Favorites",
+        owner: {
+          connect: {
+            id: user.id,
+          },
+        },
+      },
+    });
+
+    res.status(201).json(safeUser);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to register user"});
+  }
+};
