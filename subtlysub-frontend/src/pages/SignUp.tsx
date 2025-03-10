@@ -59,7 +59,7 @@ const SignUp = () => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
-                  className="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-purple-200 focus:border-purple-400"
+                  className="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-purple-200 focus:border-purple-500"
                 />
           </div>
 
@@ -70,19 +70,19 @@ const SignUp = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required 
-                  className="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-purple-200 focus:border-purple-400"
+                  className="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-purple-200 focus:border-purple-500"
                 />
           </div>
           
           <button
             type="submit"
-            className="w-full px-4 py-2 font-semibold text-white bg-purple-500 rounded-lg hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-400"
+            className="primary-button"
           >
             Sign Up
           </button>
 
           <p className="text-center text-gray-600">
-            Already have an account? <Link to="/login" className="text-purple-500 hover:underline">Log in</Link>
+            Already have an account? <Link to="/login" className="text-purple-600 hover:underline">Log in</Link>
           </p>
         </form>
       </div>

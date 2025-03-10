@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-async function fetchTags(tags) {
+async function syncTags(tags) {
   const existingTags = await prisma.tag.findMany({
     where: {
       name: {
@@ -37,25 +37,16 @@ export const createPost = async (req, res) => {
       return res.status(400).json({ message: "Cards are required" });
     }
 
-    const existingTags = await prisma.tag.findMany({
-      where: {
-        name: {
-          in: tags,
-        },
-      },
-    });
-
-    tags = await fetchTags(tags);
-
+    const syncedTags = await syncTags(tags);
     const post = await prisma.post.create({
       data: {
         title,
         description,
         authorId: req.user.id,
         tags: {
-          connect: tags.map((tag) => ({ id: tag.id })),
+          connect: syncedTags.map((tag) => ({ id: tag.id })),
         },
-        words: {
+        cards: {
           create: cards.map((card) => ({
             word: card.word,
             translation: card.translation,
@@ -67,6 +58,7 @@ export const createPost = async (req, res) => {
     res.status(201).json(post);
   } catch (error) {
     res.status(500).json({ message: "Error creating post", error });
+    console.error(error);
   }
 }
 

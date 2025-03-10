@@ -15,7 +15,7 @@ app.use(cors());
 app.use("/auth", authRoutes)
 app.use("/api/users", userRoutes)
 app.use("/api/posts", postRoutes)
-app.use("/api/routes", tagRoutes)
+app.use("/api/tags", tagRoutes)
 app.use("/api/collections", collectionRoutes)
 
 app.listen(3000, () => {
