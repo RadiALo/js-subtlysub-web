@@ -22,6 +22,9 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+app.use(express.json());
+app.use(cors());
+
 app.post("/upload", upload.single("image"), (req, res) => {
   if (!req.file) {
     return res.status(400).send("File don't uploaded");
@@ -32,10 +35,7 @@ app.post("/upload", upload.single("image"), (req, res) => {
 
 app.use("/uploads", express.static("uploads"));
 
-app.use(express.json());
-app.use(cors());
 
-app.use("/upload", imageRoutes)
 app.use("/auth", authRoutes)
 app.use("/api/users", userRoutes)
 app.use("/api/posts", postRoutes)

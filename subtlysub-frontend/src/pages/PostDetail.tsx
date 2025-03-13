@@ -10,6 +10,10 @@ const PostDetail = () => {
   const navigate = useNavigate();
   const [post, setPost] = useState<Post>();
 
+  const imagePath = () => {
+    return `${apiUrl}${post.imageUrl}`
+  }
+
   useEffect(() => {
     const fetchPost = async () => {
       const response = await fetch(`${apiUrl}/api/posts/${id}`);
@@ -32,8 +36,8 @@ const PostDetail = () => {
         <div>
           <div className="overflow-hidden rounded-t-lg">
             <img 
-              src="/diablo-post-image.avif" 
-              alt="Post image" 
+              src={imagePath()}
+              alt="Post image"
               className="w-full max-h-24 md:max-h-32 object-cover"
             />
           </div>

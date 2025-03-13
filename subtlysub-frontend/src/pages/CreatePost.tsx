@@ -11,6 +11,7 @@ const CreatePost = () => {
   const [allTags, setAllTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState("");
   const [cards, setCards] = useState([{ word: "", translation: "" }]);
+  const [imageUrl, setImageUrl] = useState("");
 
   const navigate = useNavigate();
 
@@ -97,7 +98,7 @@ const CreatePost = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ title, description, cards, tags })
+        body: JSON.stringify({ title, description, imageUrl, cards, tags })
       });
 
       if (!response.ok) {
@@ -114,6 +115,24 @@ const CreatePost = () => {
       }
     }
   };
+
+  const uploadImage = async (file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const response = await fetch(`${apiUrl}/upload`, {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+      setImageUrl(data.filePath);
+      console.log("Uploaded file: ", data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <div className="max-w-2xl mx-auto mt-6 p-6 bg-white rounded-lg shadow-md space-y-6">
@@ -135,7 +154,7 @@ const CreatePost = () => {
           onChange={(e) => setDescription(e.target.value)} 
           className="input-field"
         />
-
+        <input type="file" onChange={(e) => { if (e.target.files) uploadImage(e.target.files[0]) }} />
         <h2 className="text-lg font-semibold">Tags</h2>
         <div className="flex flex-wrap gap-2">
           {tags.map((tag) => (

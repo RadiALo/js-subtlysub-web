@@ -6,7 +6,12 @@ export interface PostProps {
 }
 
 const PostItem = ({ post }: PostProps) => {
+  const apiUrl = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
+
+  const imagePath = () => {
+    return `${apiUrl}${post.imageUrl}`
+  }
 
   return (
     <div
@@ -17,7 +22,7 @@ const PostItem = ({ post }: PostProps) => {
     >
       <div className="overflow-hidden rounded-t-lg">
         <img 
-          src="/diablo-post-image.avif" 
+          src={imagePath()}
           alt="Post image" 
           className="w-full max-h-12 md:max-h-24 object-cover"
         />

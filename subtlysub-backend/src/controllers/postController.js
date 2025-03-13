@@ -27,7 +27,7 @@ async function syncTags(tags) {
 
 export const createPost = async (req, res) => {
   try {
-    const { title, description, tags, cards } = req.body;
+    const { title, description, tags, cards, imageUrl } = req.body;
 
     if (!title) {
       return res.status(400).json({ message: "Title is required" });
@@ -42,6 +42,7 @@ export const createPost = async (req, res) => {
       data: {
         title,
         description,
+        imageUrl,
         authorId: req.user.id,
         tags: {
           connect: syncedTags.map((tag) => ({ id: tag.id })),
