@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 const SignUp = () => {
+  const apiUrl = import.meta.env.VITE_API_URL;
+  
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -13,7 +15,7 @@ const SignUp = () => {
       e.preventDefault();
       setErrorMsg("");
 
-      const registerUrl = "http://localhost:3000/auth/register";
+      const registerUrl = `${apiUrl}/auth/register`;
       const response = await fetch(registerUrl, {
         method: "POST",
         headers: { "Content-Type":"application/json" },

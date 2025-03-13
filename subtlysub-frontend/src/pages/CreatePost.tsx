@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const CreatePost = () => {
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   const [error, setError] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -15,7 +17,7 @@ const CreatePost = () => {
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/tags");
+        const response = await fetch(`${apiUrl}/api/tags`);
 
         if (!response.ok) {
           throw new Error("Failed to fetch tags");
@@ -29,7 +31,7 @@ const CreatePost = () => {
     };
 
     fetchTags();
-  }, []);
+  }, [apiUrl]);
 
   const handleRemoveTag = (tag: string) => {
     setTags(tags.filter((t) => t !== tag));
@@ -89,7 +91,7 @@ const CreatePost = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/posts", {
+      const response = await fetch(`${apiUrl}/api/posts`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,39 +1,30 @@
+import { useEffect, useState } from "react";
 import PostItem from "../components/PostItem";
+import { Post } from "../types/Post";
 
 const Explore = () => {
-  // Тимчасові вигадані пости
-  const posts = [
-    {
-      id: "1",
-      title: "Breaking Bad",
-      description: "Дізнайтесь слова які необхідно знати кожному, щоб кофмортно дивитись культовий серіал!",
-      author: { id: "101", username: "john_doe" },
-      tags: [
-        { id: "201", name: "HBO" },
-        { id: "202", name: "Show" }
-      ]
-    },
-    {
-      id: "2",
-      title: "Baldur's Gate 3",
-      description: "Вивчить всі особливості світу D&D перш ніж поринути у захоплючу пригоду до брами Балдура!",
-      author: { id: "102", username: "jane_smith" },
-      tags: [
-        { id: "204", name: "D&D" },
-        { id: "203", name: "Larian Studios" },
-        { id: "204", name: "Videogames" }
-      ]
-    },
-    {
-      id: "3",
-      title: "Adventure Time",
-      description: "Покращуйте свої знання англійської дивлячись улюблені мультики дитинства!",
-      author: { id: "103", username: "dev_guru" },
-      tags: [
-        { id: "205", name: "Cartoon" }
-      ]
+  const apiUrl = import.meta.env.VITE_API_URL;
+
+  const [posts, setPosts] = useState<Post[]>([]);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/api/posts`);
+    
+        if (!response.ok) {
+          throw new Error("Failed to fetch posts");
+        }
+        
+        const data = await response.json();
+        setPosts(data);
+      } catch (error) {
+        console.error("Error fetching tags: ", error);
+      }
     }
-  ];
+
+    fetchPosts();
+  }, [apiUrl]);
 
   return (
     <div className="max-w-5xl mx-auto p-6">

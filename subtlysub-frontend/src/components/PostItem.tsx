@@ -1,15 +1,9 @@
 import { useNavigate } from "react-router-dom";
+import { Post } from "../types/Post"
 
-interface PostProps {
-  post: {
-    id: string;
-    title: string;
-    description: string;
-    author: { id: string; username: string };
-    tags: { id: string; name: string }[];
-  };
+export interface PostProps {
+  post: Post;
 }
-
 
 const PostItem = ({ post }: PostProps) => {
   const navigate = useNavigate();

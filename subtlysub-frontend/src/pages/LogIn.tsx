@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 const LogIn = () => {
+  const apiUrl = import.meta.env.VITE_API_URL;
+  
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -12,7 +14,7 @@ const LogIn = () => {
     setErrorMsg("");
 
     try {
-      const loginUrl = "http://localhost:3000/auth/login"
+      const loginUrl = `${apiUrl}/auth/login`
       const response = await fetch(loginUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json"},
