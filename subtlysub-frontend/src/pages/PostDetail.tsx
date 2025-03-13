@@ -11,7 +11,7 @@ const PostDetail = () => {
   const [post, setPost] = useState<Post>();
 
   const imagePath = () => {
-    return `${apiUrl}${post.imageUrl}`
+    return `${apiUrl}${post?.imageUrl}`
   }
 
   useEffect(() => {
