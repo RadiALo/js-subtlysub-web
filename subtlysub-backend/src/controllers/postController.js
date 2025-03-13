@@ -64,7 +64,7 @@ export const createPost = async (req, res) => {
 
 export const getPosts = async (req, res) => {
   try {
-    const posts = await prisma.post.findMany({ include: {tags: true, author: true} });
+    const posts = await prisma.post.findMany({ include: {tags: true, author: true } });
     res.json(posts);
   } catch (error) {
     res.status(500).json({ message: "Error fetching posts", error });
@@ -79,6 +79,11 @@ export const getPostById = async (req, res) => {
       where: {
         id: id,
       },
+      include: {
+        tags: true,
+        author: true,
+        cards: true
+      }
     });
 
     if (!post) {
@@ -164,5 +169,29 @@ export const deletePost = async (req, res) => {
 
   } catch (error) {
     res.status(500).json({ message: "Error deleting post", error });
+  }
+}
+
+export const checkPermissions = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { user } = req;
+
+    if (user.role == "admin" || user.role == "moderator") {
+      return res.status(200).json({ message: "Authority provided" });
+    };
+
+    const post = prisma.post.findUnique({
+      where: { id },
+      include: { author: true }
+    });
+
+    if (post.author.id === user.id) {
+      return res.status(200).json({ message: "Authority provided" });
+    }
+
+    return res.status(403).json({ message: "Unauthorized" });
+  } catch (error) {
+    res.status(500).json({ message: "Error on check", error });
   }
 }

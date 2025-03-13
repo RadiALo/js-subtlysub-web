@@ -37,6 +37,7 @@ model Post {
   id            String        @id @default(uuid())
   title         String
   description   String
+  imageUrl      String        @default("")
   tags          Tag[]
   collections   Collection[]
   authorId      String
