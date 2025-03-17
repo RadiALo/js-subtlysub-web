@@ -143,7 +143,7 @@ export const updatePost = async (req, res) => {
     }
 
     const syncedTags = await syncTags(tags);
-
+    console.log(user.role)
     const pending = (user.role !== "admin" && user.role !== "moderator");
 
     const updatedPost = await prisma.post.update({
@@ -204,26 +204,23 @@ export const deletePost = async (req, res) => {
   }
 }
 
-export const checkPermissions = async (req, res) => {
+export const approvePost = async (req, res) => {
   try {
     const { id } = req.params;
     const { user } = req;
-
-    if (user.role == "admin" || user.role == "moderator") {
-      return res.status(200).json({ message: "Authority provided" });
+    
+    if (user.role !== "admin" && user.role !== "moderator") {
+      return res.status(403).json({ message: "Unauthorized" });
     };
 
-    const post = prisma.post.findUnique({
+    await prisma.post.update({
       where: { id },
-      include: { author: true }
+      data: {
+        pending: false,
+      }
     });
 
-    if (post.author.id === user.id) {
-      return res.status(200).json({ message: "Authority provided" });
-    }
-
-    return res.status(403).json({ message: "Unauthorized" });
   } catch (error) {
-    res.status(500).json({ message: "Error on check", error });
+    res.json(error);
   }
 }

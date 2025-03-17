@@ -31,6 +31,33 @@ const PostDetail = () => {
     fetchPost();
   }, [apiUrl])
 
+  const handleApprove = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      return;
+    }
+
+    const response = await fetch(`${apiUrl}/api/posts/${post?.id}/approve`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to approve post");
+    }
+
+    if (!post) {
+      return;
+    }
+    
+    post.pending = false;
+    setPost(post);
+  };
+
   return (
     <>
       <div className="max-w-6xl mx-auto mt-6 bg-white rounded-lg shadow-md">
@@ -53,14 +80,25 @@ const PostDetail = () => {
             <div className="flex justify-between items-center">
               <h1 className="text-2xl font-bold text-gray-800">{post?.title}</h1>
 
-              {(user.role === 'admin' || user.role === 'moderator' || user.id === post?.author.id) && <div>
-                <Link
-                  to="./edit"
-                  className="primary-button"
-                >
-                  Edit
-                </Link>
-              </div>}
+              <div className="flex gap-4 items-center flex-row-reverse">
+                {(user.role === 'admin' || user.role === 'moderator' || user.id === post?.author.id) && <div>
+                  <Link
+                    to="./edit"
+                    className="primary-button"
+                  >
+                    Edit
+                  </Link>
+                </div>}
+
+                {post?.pending && (user.role === 'admin' || user.role === 'moderator') && <div>
+                  <button
+                    className="primary-button"
+                    onClick={handleApprove}
+                  >
+                    Approve
+                  </button>
+                </div>}
+              </div>
             </div>
 
             <p className="text-gray-500 text-sm">by {post?.author.username}</p>
