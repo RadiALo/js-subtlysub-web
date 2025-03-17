@@ -35,12 +35,18 @@ const PostDetail = () => {
     <>
       <div className="max-w-6xl mx-auto mt-6 bg-white rounded-lg shadow-md">
         <div>
-          <div className="overflow-hidden rounded-t-lg">
+          <div className="overflow-hidden rounded-t-lg relative">
             <img 
               src={imagePath()}
               alt="Post image"
               className="w-full max-h-24 md:max-h-32 object-cover"
             />
+
+            {post?.pending && (
+              <div className="absolute top-2 right-2 bg-purple-500 text-white text-sm font-bold px-3 py-1 rounded-md">
+                Pending
+              </div>
+            )}
           </div>
 
           <div className="ml-6 p-6">

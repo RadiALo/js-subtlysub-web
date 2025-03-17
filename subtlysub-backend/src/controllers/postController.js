@@ -127,7 +127,8 @@ export const updatePost = async (req, res) => {
   try {
     const { id } = req.params;
     const { title, description, tags, cards } = req.body;
-    
+    const { user } = req;
+
     const existingPost = await prisma.post.findUnique({
       where: { id },
       include: { tags: true, cards: true },
@@ -137,17 +138,20 @@ export const updatePost = async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    if (existingPost.authorId !== req.user.id && req.user.role !== "admin" && req.user.role !== "moderator") {
+    if (existingPost.authorId !== user.id && user.role !== "admin" && user.role !== "moderator") {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
     const syncedTags = await syncTags(tags);
+
+    const pending = (user.role !== "admin" && user.role !== "moderator");
 
     const updatedPost = await prisma.post.update({
       where: { id },
       data: {
         title,
         description,
+        pending,
         tags: {
           set: syncedTags.map((tag) => ({ id: tag.id }))
         },
