@@ -27,6 +27,24 @@ const LogIn = () => {
 
       const data = await response.json();
       localStorage.setItem("token", data.token);
+
+      const decodeToken = (token: string) => {
+        try {
+          const base64Url = token.split(".")[1];
+          const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+          return JSON.parse(atob(base64));
+        } catch {
+          return null;
+        }
+      };
+      const decoded = decodeToken(data.token);
+      
+      if (decoded) {
+        localStorage.setItem("user", JSON.stringify(decoded));
+      } else {
+        console.error("Invalid token");
+      }
+
       navigate("/explore");
     } catch (error) {
       if (error instanceof Error) {

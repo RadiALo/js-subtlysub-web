@@ -12,6 +12,9 @@ export const login = async (req, res) => {
       where: {
         username,
       },
+      include: {
+        role: true
+      }
     });
 
     if (!user) {
@@ -24,11 +27,10 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: "Invalid username or password" });
     }
 
-    // generate jwt token
     const token = jwt.sign(
-      { id: user.id, username: user.username },
+      { id: user.id, username: user.username, role: user.role.name },
       process.env.JWT_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: "3d" }
     );
 
     res.status(200).json({ result: "Login successful", token });

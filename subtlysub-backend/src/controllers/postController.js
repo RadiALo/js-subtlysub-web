@@ -65,7 +65,33 @@ export const createPost = async (req, res) => {
 
 export const getPosts = async (req, res) => {
   try {
-    const posts = await prisma.post.findMany({ include: {tags: true, author: true } });
+    const { authorId } = req.query;
+
+    if (authorId) {
+      console.log(authorId)
+      const posts = await prisma.post.findMany({
+        where: {authorId},
+        include: {tags: true, author: true }
+      });
+      res.json(posts);
+    } else {
+      const posts = await prisma.post.findMany({
+        where: {pending: false},
+        include: {tags: true, author: true }
+      });
+      res.json(posts);
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching posts", error });
+  }
+}
+
+export const getUnpublishedPosts = async (req, res) => {
+  try {
+    const posts = await prisma.post.findMany({
+      where: { pending },
+      include: {tags: true, author: true }
+    });
     res.json(posts);
   } catch (error) {
     res.status(500).json({ message: "Error fetching posts", error });
@@ -111,7 +137,7 @@ export const updatePost = async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    if (existingPost.authorId !== req.user.id && req.role !== "admin" && req.role !== "moderator") {
+    if (existingPost.authorId !== req.user.id && req.user.role !== "admin" && req.user.role !== "moderator") {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
@@ -155,7 +181,7 @@ export const deletePost = async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    if (post.authorId !== req.user.id && req.role !== "admin" && req.role !== "moderator") {
+    if (post.authorId !== req.user.id && req.user.role !== "admin" && req.user.role !== "moderator") {
       return res.status(403).json({ message: "Unauthorized" });
     }
 

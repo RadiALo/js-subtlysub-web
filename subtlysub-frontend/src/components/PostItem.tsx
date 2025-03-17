@@ -15,11 +15,17 @@ const PostItem = ({ post }: PostProps) => {
 
   return (
     <div
-      className="bg-white rounded-lg shadow-md transition-transform duration-300 ease-out
+      className="relative bg-white rounded-lg shadow-md transition-transform duration-300 ease-out
                   hover:scale-105 hover:shadow-xl hover:bg-purple-50 cursor-pointer"
       onClick={() => navigate(`/posts/${post.id}`)}
       role="button"
     >
+      {post.pending && (
+        <span className="absolute top-2 right-2 bg-purple-500 text-white text-xs font-bold px-2 py-1 rounded-lg">
+          Pending
+        </span>
+      )}
+      
       <div className="overflow-hidden rounded-t-lg">
         <img 
           src={imagePath()}

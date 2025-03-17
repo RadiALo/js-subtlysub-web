@@ -9,6 +9,8 @@ const PostDetail = () => {
   const { id } = useParams();
   const [post, setPost] = useState<Post>();
 
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
   const imagePath = () => {
     return `${apiUrl}${post?.imageUrl}`
   }
@@ -45,14 +47,14 @@ const PostDetail = () => {
             <div className="flex justify-between items-center">
               <h1 className="text-2xl font-bold text-gray-800">{post?.title}</h1>
 
-              <div>
+              {(user.role === 'admin' || user.role === 'moderator' || user.id === post?.author.id) && <div>
                 <Link
                   to="./edit"
                   className="primary-button"
                 >
                   Edit
                 </Link>
-              </div>
+              </div>}
             </div>
 
             <p className="text-gray-500 text-sm">by {post?.author.username}</p>
