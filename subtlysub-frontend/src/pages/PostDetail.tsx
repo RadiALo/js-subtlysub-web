@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Post } from "../types/Post";
 import { useEffect, useState } from "react";
 import CardItem from "../components/CardItem";
@@ -7,7 +7,6 @@ const PostDetail = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
 
   const { id } = useParams();
-  const navigate = useNavigate();
   const [post, setPost] = useState<Post>();
 
   const imagePath = () => {
@@ -43,7 +42,19 @@ const PostDetail = () => {
           </div>
 
           <div className="ml-6 p-6">
-            <h1 className="text-2xl font-bold text-gray-800">{post?.title}</h1>
+            <div className="flex justify-between items-center">
+              <h1 className="text-2xl font-bold text-gray-800">{post?.title}</h1>
+
+              <div>
+                <Link
+                  to="./edit"
+                  className="primary-button"
+                >
+                  Edit
+                </Link>
+              </div>
+            </div>
+
             <p className="text-gray-500 text-sm">by {post?.author.username}</p>
 
             <div className="mt-4 mb-4">
@@ -51,7 +62,7 @@ const PostDetail = () => {
             </div>
 
             
-            <div className="tag-container">
+            <div className="mb-4 tag-container">
               {post?.tags?.map(tag => (
                 <span
                   key={tag.id}

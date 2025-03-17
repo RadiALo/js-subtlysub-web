@@ -101,21 +101,21 @@ export const updatePost = async (req, res) => {
   try {
     const { id } = req.params;
     const { title, description, tags, cards } = req.body;
-
+    
     const existingPost = await prisma.post.findUnique({
       where: { id },
-      include: { tags: true, words: true },
+      include: { tags: true, cards: true },
     });
 
     if (!existingPost) {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    if (post.authorId !== req.user.id && req.role !== "admin" && req.role !== "moderator") {
+    if (existingPost.authorId !== req.user.id && req.role !== "admin" && req.role !== "moderator") {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
-    tags = await fetchTags(tags);
+    const syncedTags = await syncTags(tags);
 
     const updatedPost = await prisma.post.update({
       where: { id },
@@ -123,10 +123,10 @@ export const updatePost = async (req, res) => {
         title,
         description,
         tags: {
-          set: tags.map((tag) => ({ id: tag.id }))
+          set: syncedTags.map((tag) => ({ id: tag.id }))
         },
-        words: {
-          deleteMany: {},
+        cards: {
+          deleteMany: { postId: id },
           create: cards.map((card) => ({
             word: card.word,
             translation: card.translation,
@@ -139,6 +139,7 @@ export const updatePost = async (req, res) => {
 
   } catch (error) {
     res.status(500).json({ message: "Error updating post", error });
+    console.error(error);
   }
 }
 

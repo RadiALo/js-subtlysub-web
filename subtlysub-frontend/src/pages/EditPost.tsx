@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-const CreatePost = () => {
+const EditPost = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
+
+  const { id } = useParams();
 
   const [error, setError] = useState("");
   const [title, setTitle] = useState("");
@@ -27,6 +29,30 @@ const CreatePost = () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
+
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/api/posts/${id}`);
+        
+        if (!response.ok) {
+          throw new Error("Failed to fetch post");
+        }
+  
+        const data = await response.json();
+  
+        setTitle(data.title);
+        setDescription(data.description);
+        console.log(data.tags);
+        setTags((data.tags as { name: string }[]).map(tag => tag.name));
+        setCards(data.cards);
+      } catch (error) {
+        console.error("Error to fetch post: ", error);
+      }
+    }
+
+    fetchPost();
+  }, [apiUrl, id]);
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -105,8 +131,8 @@ const CreatePost = () => {
     }
 
     try {
-      const response = await fetch(`${apiUrl}/api/posts`, {
-        method: "POST",
+      const response = await fetch(`${apiUrl}/api/posts/${id}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
@@ -149,7 +175,7 @@ const CreatePost = () => {
 
   return (
     <div className="max-w-2xl mx-auto mt-6 p-6 bg-white rounded-lg shadow-md space-y-6">
-      <h1 className="text-2xl font-bold text-gray-800">Create Post</h1>
+      <h1 className="text-2xl font-bold text-gray-800">Edit Post</h1>
       {error && <p className="text-red-500 text-center">{error}</p>}
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -245,10 +271,10 @@ const CreatePost = () => {
         <button 
           type="submit" 
           className="primary-button"
-        >Create Post</button>
+        >Save</button>
       </form>
     </div>
   );
 };
 
-export default CreatePost;
+export default EditPost;

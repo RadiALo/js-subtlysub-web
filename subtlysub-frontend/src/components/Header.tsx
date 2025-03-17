@@ -37,7 +37,7 @@ const Header = () => {
               </li>
               <li>
                 <Link
-                  to="/create"
+                  to="/posts/create"
                   className="header-button"
                 >
                   Create

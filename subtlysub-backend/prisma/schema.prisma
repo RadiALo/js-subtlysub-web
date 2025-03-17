@@ -29,7 +29,7 @@ model Collection {
   id            String        @id @default(uuid())
   name          String
   ownerId       String
-  owner         User          @relation(fields: [ownerId], references: [id])
+  owner         User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   posts         Post[]
 }
 
@@ -41,7 +41,7 @@ model Post {
   tags          Tag[]
   collections   Collection[]
   authorId      String
-  author        User          @relation(fields: [authorId], references: [id])
+  author        User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
   cards         Card[]
   pending       Boolean       @default(true)
   createdAt     DateTime      @default(now())
@@ -50,7 +50,7 @@ model Post {
 model Card {
   id            Int           @id @default(autoincrement())
   postId        String
-  post          Post          @relation(fields: [postId], references: [id])
+  post          Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
   word          String
   translation   String
 }
