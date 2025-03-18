@@ -22,6 +22,7 @@ const PostDetail = () => {
 
       if (!response.ok) {
         console.error("Failed to fetch post");
+        return;
       }
 
       const data = await response.json();
@@ -186,8 +187,6 @@ const PostDetail = () => {
             <p className="mt-4 text-gray-500">No words available</p>
           )}
         </div>
-
-        
       </div>
 
       {isModalOpen && <div className="fixed inset-0 flex items-center justify-center bg-black/50">

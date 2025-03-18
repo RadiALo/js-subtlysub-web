@@ -7,6 +7,7 @@ import Explore from "./pages/Explore";
 import Home from "./pages/Home";
 import CreatePost from "./pages/CreatePost";
 import PostDetail from "./pages/PostDetail";
+import CollectionDetail from "./pages/CollectionDetail";
 import EditPost from "./pages/EditPost";
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
           <Route path="/posts/create" element={<CreatePost />}/>
           <Route path="/posts/:id/edit" element={<EditPost />}/>
           <Route path="/posts/:id" element={<PostDetail />}/>
+          <Route path="/collections/:id" element={<CollectionDetail />}/>
         </Routes>      
       </div>
     </Router>

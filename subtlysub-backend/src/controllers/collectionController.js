@@ -51,7 +51,12 @@ export const getCollectionById = async (req, res) => {
         id
       },
       include: {
-        posts: true,
+        posts: {
+          include: {
+            author: true,
+            tags: true
+          }
+        },
         owner: true
       }
     });
