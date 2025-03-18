@@ -30,14 +30,14 @@ const PostItem = ({ post }: PostProps) => {
         <img 
           src={imagePath()}
           alt="Post image" 
-          className="w-full max-h-12 md:max-h-24 object-cover"
+          className="w-full max-h-32 object-cover"
         />
       </div>
 
       <div className="p-4">
         <h2 className="text-xl font-bold text-gray-800">{post.title}</h2>
         <p className="text-sm text-gray-500">by {post.author.username}</p>
-        <p className="text-gray-700 mt-2">{post.description}</p>
+        <p className="text-gray-700 mt-2 h-14">{post.description.length < 60 ? post.description : `${post.description.slice(0, 60).trim()}...`}</p>
 
         <div className="tag-container">
           {post.tags.map(tag => (

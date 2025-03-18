@@ -31,6 +31,10 @@ export const getCollectionsByUser = async (req, res) => {
       where: {
         ownerId: user.id,
       },
+      include: {
+        posts: true,
+        owner: true
+      }
     });
     res.status(200).json(collections);
   } catch (error) {
@@ -44,8 +48,12 @@ export const getCollectionById = async (req, res) => {
 
     const collection = await prisma.collection.findUnique({
       where: {
-        id,
+        id
       },
+      include: {
+        posts: true,
+        owner: true
+      }
     });
 
     if (!collection) {
@@ -136,7 +144,6 @@ export const addPostToCollection = async (req, res) => {
   }
 };
 
-
 export const removePostFromCollection = async (req, res) => {
   try {
     const { id } = req.params;
@@ -177,6 +184,99 @@ export const removePostFromCollection = async (req, res) => {
     res.status(500).json({ message: "Error removing post from collection", error });
   }
 };
+
+export const addPostToFavorite = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { user } = req;
+
+    if (!user) {
+      return res.status(403).json({message: "Unauthorized"});
+    }
+
+    const favoriteCollection = await prisma.collection.findUnique({
+      where: { ownerId: user.id, name: "Favorites" },
+      include: { posts: true }
+    });
+
+    if (!favoriteCollection) {
+      return res.status(404).json({message: "Favorites collection not founded"})
+    }
+
+    const post = await prisma.post.findUnique({
+      where: {id}
+    });
+
+    if (!post) {
+      return res.status(404).json({message: "Post not founded"})
+    }
+
+    if (favoriteCollection.posts.some(p => p.id === id)) {
+      return res.status(400).json({ message: "Post is already in Favorites" });
+    }
+
+    await prisma.collection.update({
+      where: { id: favoriteCollection.id },
+      data: {
+        posts: {
+          connect: { id }
+        }
+      }
+    });
+
+    return res.json({ message: "Post added to Favorites successfully" });
+  } catch (error) {
+    console.error("Error adding post to favorites:", error);
+    return res.status(500).json({ message: "Internal Server Error", error });
+  }
+};
+
+export const removePostFromFavorite = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { user } = req;
+
+    if (!user) {
+      return res.status(403).json({message: "Unauthorized"});
+    }
+
+    const favoriteCollection = await prisma.collection.findUnique({
+      where: { ownerId: user.id, name: "Favorites" },
+      include: { posts: true }
+    });
+
+    if (!favoriteCollection) {
+      return res.status(404).json({message: "Favorites collection not founded"});
+    }
+
+    const post = await prisma.post.findUnique({
+      where: {id}
+    });
+
+    if (!post) {
+      return res.status(404).json({message: "Post not founded"});
+    }
+
+    if (!favoriteCollection.posts.some(p => p.id === id)) {
+      return res.status(400).json({ message: "Post is not in Favorites" });
+    }
+
+    await prisma.collection.update({
+      where: { id: favoriteCollection.id },
+      data: {
+        posts: {
+          disconnect: { id }
+        }
+      }
+    });
+
+    return res.json({ message: "Post removed from Favorites successfully" });
+  } catch (error) {
+    console.error("Error removing post to favorites:", error);
+    return res.status(500).json({ message: "Internal Server Error", error });
+  }
+};
+
 
 export const deleteCollection = async (req, res) => {
   try {

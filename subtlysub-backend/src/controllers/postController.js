@@ -109,17 +109,18 @@ export const getPostById = async (req, res) => {
       include: {
         tags: true,
         author: true,
-        cards: true
+        cards: true,
+        linkedColl: true
       }
     });
 
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
-
-    res.json(post);
+    console.log(post)
+    return res.status(200).json(post);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching post", error });
+    return res.status(500).json({ message: "Error fetching post", error });
   }
 }
 
@@ -181,11 +182,13 @@ export const deletePost = async (req, res) => {
       where: { id },
     });
 
+    console.log(id);
+
     if (!existingPost) {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    if (post.authorId !== req.user.id && req.user.role !== "admin" && req.user.role !== "moderator") {
+    if (existingPost.authorId !== req.user.id && req.user.role !== "admin" && req.user.role !== "moderator") {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
@@ -201,6 +204,7 @@ export const deletePost = async (req, res) => {
 
   } catch (error) {
     res.status(500).json({ message: "Error deleting post", error });
+    console.error(error);
   }
 }
 

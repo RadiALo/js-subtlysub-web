@@ -28,9 +28,12 @@ model Role {
 model Collection {
   id            String        @id @default(uuid())
   name          String
+  description   String        @default("")
+  imageUrl      String        @default("")
   ownerId       String
   owner         User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   posts         Post[]
+  linkedPosts   Post[]        @relation(name: "Link")
 }
 
 model Post {
@@ -42,6 +45,8 @@ model Post {
   collections   Collection[]
   authorId      String
   author        User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  linkedCollId  String?
+  linkedColl    Collection?   @relation(name: "Link", fields: [linkedCollId], references: [id])
   cards         Card[]
   pending       Boolean       @default(true)
   createdAt     DateTime      @default(now())
