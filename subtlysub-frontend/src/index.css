@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 .tag {
-  @apply px-2 py-1 text-sm text-purple-500 bg-purple-100 rounded
+  @apply px-2 py-1 text-sm text-purple-500 bg-purple-100 rounded h-8
 }
 
 .tag-container {

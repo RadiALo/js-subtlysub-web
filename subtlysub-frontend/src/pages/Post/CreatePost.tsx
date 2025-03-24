@@ -168,6 +168,8 @@ const CreatePost = () => {
           className="input-field"
         />
         <input type="file" onChange={(e) => { if (e.target.files) uploadImage(e.target.files[0]) }} />
+        {imageUrl && <img src={`${apiUrl}${imageUrl}`} alt="Collection icon" className="rounded w-full max-h-32 object-cover" />}
+        
         <h2 className="text-lg font-semibold">Tags</h2>
         <div className="flex flex-wrap gap-2">
           {tags.map((tag) => (

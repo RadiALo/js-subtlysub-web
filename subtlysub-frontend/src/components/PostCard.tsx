@@ -21,7 +21,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
           {post.title}
         </h2>
         <p className="text-sm text-gray-500">by {post.author.username}</p>
-        <div className="tag-container">
+        <div className="tag-container h-20">
           {post.tags.map((tag) => (
             <span key={tag.id} className="tag">
               {tag.name}

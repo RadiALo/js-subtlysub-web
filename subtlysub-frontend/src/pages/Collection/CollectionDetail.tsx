@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import PostItem from "../components/PostItem";
-import PostCard from "../components/PostCard";
+import PostCard from "../../components/PostCard";
+import { Post } from "../../types/Post";
+import { Collection } from "../../types/Collection";
 
 const CollectionDetail = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -58,7 +59,7 @@ const CollectionDetail = () => {
               <div className="p-6">
                 <h1 className="text-2xl font-bold text-gray-800">Posts</h1>
                 <ul className="mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                  {collection.posts.map((post) => (
+                  {collection.posts.map((post: Post) => (
                     <PostCard post={post}/>
                   ))}
                 </ul>

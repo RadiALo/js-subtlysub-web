@@ -1,13 +1,14 @@
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { Post } from "../types/Post";
+import { Post } from "../../types/Post";
 import { useEffect, useState } from "react";
-import CardItem from "../components/CardItem";
+import CardItem from "../../components/CardItem";
 
 
 const PostDetail = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
 
   const { id } = useParams();
+  const token = localStorage.getItem("token");
   const [post, setPost] = useState<Post>();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,24 +19,38 @@ const PostDetail = () => {
 
   useEffect(() => {
     const fetchPost = async () => {
-      const response = await fetch(`${apiUrl}/api/posts/${id}`);
+      const postResponse = await fetch(`${apiUrl}/api/posts/${id}`);
 
-      if (!response.ok) {
+      if (!postResponse.ok) {
         console.error("Failed to fetch post");
         return;
       }
 
-      const data = await response.json();
+      const favoriteCollectionResponse = await fetch(`${apiUrl}/api/collections/favorite`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
 
-      setPost(data);
+      if (!favoriteCollectionResponse.ok) {
+        console.error("Failed to fetch favorite collection");
+        return;
+      }
+
+      const post = await postResponse.json();
+      const favoriteCollection = await favoriteCollectionResponse.json();
+      if (favoriteCollection.posts.some((p: Post) => p.id === post.id)) {
+        post.favorite = true;
+      }
+
+      setPost(post);
     }
 
     fetchPost();
   }, [apiUrl])
 
   const handleApprove = async () => {
-    const token = localStorage.getItem("token");
-
     if (!token) {
       return;
     }
@@ -61,8 +76,6 @@ const PostDetail = () => {
   };
 
   const handleDelete = async () => {
-    const token = localStorage.getItem("token");
-
     if (!token) {
       return;
     }
@@ -79,6 +92,29 @@ const PostDetail = () => {
     }
 
     navigate(-1);
+  }
+
+  const toggleFavorite = async () => {
+    if (!token) {
+      return;
+    }
+
+    const action = post?.favorite ? "remove" : "add";
+
+    const response = await fetch(`${apiUrl}/api/collections/favorite/${post?.id}/${action}`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      console.error("Failed to add post to favorite collection");
+      return;
+    }
+
+    post.favorite = !post.favorite;
+    setPost({...post});
   }
 
   return (
@@ -117,6 +153,21 @@ const PostDetail = () => {
 
                 <div className="mt-4 mb-4">
                   {post?.description}
+                </div>
+
+                <div className="flex justify-end items-center gap-4 mt-4">
+                  <button className="px-4 py-2 inline-block font-semibold text-white bg-purple-500 rounded-lg hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                    Add to
+                  </button>
+
+                  <button
+                    className="font-bold text-lg px-4 py-2 bg-purple-500 text-white 
+                              rounded-full shadow-md hover:bg-purple-600 active:scale-95 
+                              transition-all duration-200"
+                    onClick={toggleFavorite}
+                  >
+                    { post?.favorite ? "❤️" : "🤍" }
+                  </button>
                 </div>
               </div>
 

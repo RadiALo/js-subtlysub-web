@@ -5,15 +5,21 @@ const prisma = new PrismaClient();
 export const createCollection = async (req, res) => {
   try {
     const { user } = req;
-    const { name } = req.body;
+    const { name, description, imageUrl } = req.body;
 
-    if (!name) {
-      return res.status(400).json({ message: "Name is required" });
+    if (!name || !description) {
+      return res.status(400).json({ message: "Name and description is required" });
+    }
+
+    if (!imageUrl) {
+      return res.status(400).json({ message: "Image URL is required" });
     }
 
     const collection = await prisma.collection.create({
       data: {
         name,
+        description,
+        imageUrl,
         ownerId: user.id,
       },
     });
@@ -39,6 +45,25 @@ export const getCollectionsByUser = async (req, res) => {
     res.status(200).json(collections);
   } catch (error) {
     res.status(500).json({ message: "Error getting collections", error });
+  }
+};
+
+export const getFavoriteCollectionByUser = async (req, res) => {
+  try {
+    const { user } = req;
+    const favoriteCollection = await prisma.collection.findFirst({
+      where: {
+        ownerId: user.id,
+        name: "Favorites"
+      },
+      include: {
+        posts: true,
+        owner: true
+      }
+    });
+    res.status(200).json(favoriteCollection);
+  } catch (error) {
+    res.status(500).json({ message: "Error getting favorite collection", error });
   }
 };
 
@@ -199,7 +224,7 @@ export const addPostToFavorite = async (req, res) => {
       return res.status(403).json({message: "Unauthorized"});
     }
 
-    const favoriteCollection = await prisma.collection.findUnique({
+    const favoriteCollection = await prisma.collection.findFirst({
       where: { ownerId: user.id, name: "Favorites" },
       include: { posts: true }
     });
@@ -245,7 +270,7 @@ export const removePostFromFavorite = async (req, res) => {
       return res.status(403).json({message: "Unauthorized"});
     }
 
-    const favoriteCollection = await prisma.collection.findUnique({
+    const favoriteCollection = await prisma.collection.findFirst({
       where: { ownerId: user.id, name: "Favorites" },
       include: { posts: true }
     });
