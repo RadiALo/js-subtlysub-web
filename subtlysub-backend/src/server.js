@@ -8,7 +8,7 @@ import userRoutes from './routes/userRoutes.js';
 import postRoutes from './routes/postRoutes.js';
 import tagRoutes from './routes/tagRoutes.js';
 import collectionRoutes from './routes/collectionRoutes.js';
-import progressRoutes from './routes/progressRoutes.js';
+import progressRoutes from './routes/learnRoutes.js';
 
 const app = express();
 
@@ -40,7 +40,7 @@ app.use("/uploads", express.static("uploads"));
 app.use("/auth", authRoutes)
 app.use("/api/users", userRoutes)
 app.use("/api/posts", postRoutes)
-app.use("/api/progress", progressRoutes)
+app.use("/api/learn", progressRoutes)
 app.use("/api/tags", tagRoutes)
 app.use("/api/collections", collectionRoutes)
 

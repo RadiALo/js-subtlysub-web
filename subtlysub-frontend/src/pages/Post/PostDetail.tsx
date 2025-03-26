@@ -273,7 +273,7 @@ const PostDetail = () => {
                 <Link
                   to="./learn"
                   className="w-full text-center px-3 py-2 font-semibold inline-block text-white
-                bg-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400" onClick={handleApprove}>
+                bg-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400">
                   Start Learning
                 </Link>
               </div>

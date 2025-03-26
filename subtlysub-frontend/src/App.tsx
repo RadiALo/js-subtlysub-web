@@ -12,6 +12,7 @@ import EditPost from "./pages/Post/EditPost";
 import CreateCollection from "./pages/Collection/CreateCollection";
 import EditCollection from "./pages/Collection/EditCollection";
 import Learn from "./pages/Learn/Learn";
+import LearnApp from "./pages/Learn/LearnApp";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/collections/create" element={<CreateCollection />}/>
           <Route path="/collections/:id/edit" element={<EditCollection />}/>
           <Route path="/collections/:id" element={<CollectionDetail />}/>
+          <Route path="/posts/:id/learn/app" element={<LearnApp />} />
           <Route path="/posts/:id/learn" element={<Learn />} />
         </Routes>      
       </div>
