@@ -17,6 +17,7 @@ model User {
   posts         Post[]
   collections   Collection[]
   createdAt     DateTime      @default(now())
+  learns Learn[]
 }
 
 model Role {
@@ -50,6 +51,7 @@ model Post {
   cards         Card[]
   pending       Boolean       @default(true)
   createdAt     DateTime      @default(now())
+  learns Learn[]
 }
 
 model Card {
@@ -64,4 +66,16 @@ model Tag {
   id            Int           @id @default(autoincrement())
   name          String        @unique
   posts         Post[]
+}
+
+model Learn {
+  userId String
+  postId String
+  user User @relation(fields: [userId], references: [id])
+  post Post @relation(fields: [postId], references: [id])
+  progress Json?
+  createdAt  DateTime @default(now())
+  lastViewed DateTime @updatedAt
+
+  @@id([userId, postId])
 }
