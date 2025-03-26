@@ -96,10 +96,10 @@ export const getCollectionById = async (req, res) => {
   }
 };
 
-export const updateCollectionName = async (req, res) => {
+export const updateCollectionById = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name } = req.body;
+    const { name, description, imageUrl } = req.body;
     const { user } = req;
 
     if (!name) {
@@ -124,6 +124,8 @@ export const updateCollectionName = async (req, res) => {
       },
       data: {
         name,
+        description,
+        imageUrl
       },
     });
 
@@ -306,7 +308,6 @@ export const removePostFromFavorite = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error", error });
   }
 };
-
 
 export const deleteCollection = async (req, res) => {
   try {

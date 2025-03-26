@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import PostCard from "../../components/PostCard";
 import { Post } from "../../types/Post";
 import { Collection } from "../../types/Collection";
@@ -7,9 +7,31 @@ import { Collection } from "../../types/Collection";
 const CollectionDetail = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const navigate = useNavigate();
 
   const { id } = useParams();
   const [collection, setCollection] = useState<Collection>();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleDelete = async () => {
+    if (!token) {
+      return;
+    }
+
+    const response = await fetch(`${apiUrl}/api/collections/${collection?.id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      return;
+    }
+
+    navigate(-1);
+  }
 
   useEffect(() => {
     const fetchCollection = async () => {
@@ -53,7 +75,27 @@ const CollectionDetail = () => {
 
               <div className="mt-4 mb-4">{collection?.description}</div>
             </div>
-            
+            {(user.role === 'admin' || user.role === 'moderator' || user.id === collection?.owner.id) &&
+                <div className="flex gap-4 items-center flex-row-reverse">
+                  {(user.role === 'admin' || user.role === 'moderator' || user.id === collection?.owner.id) && <div>
+                    <button
+                      className="red-button"
+                      onClick={() => setIsModalOpen(true)}
+                    >
+                      Delete
+                    </button>
+                  </div>}
+
+                  {(user.role === 'admin' || user.role === 'moderator' || user.id === collection?.owner.id) && <div>
+                    <Link
+                      to="./edit"
+                      className="primary-button"
+                    >
+                      Edit
+                    </Link>
+                  </div>}
+                </div>
+              }
           </div>
           { collection?.posts && collection.posts.length > 0 ? (
               <div className="p-6">
@@ -69,6 +111,27 @@ const CollectionDetail = () => {
             )}
         </div>
       </div>
+
+      {isModalOpen && <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+            <h2 className="text-lg font-bold">Are you sure you want to delete this collection?</h2>
+            <span className="text-gray-600 block mb-4">Data cannot be restored</span>
+
+            <div className="flex justify-center gap-4">
+              <button className="red-button"
+                onClick={handleDelete}
+              >
+                Yes
+              </button>
+              
+              <button className="green-button"
+                onClick={() => setIsModalOpen(false)}
+              >
+                No
+              </button>
+            </div>
+          </div>
+      </div>}
     </>
   );
 };

@@ -2,6 +2,7 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { Post } from "../../types/Post";
 import { useEffect, useState } from "react";
 import CardItem from "../../components/CardItem";
+import { Collection } from "../../types/Collection";
 
 
 const PostDetail = () => {
@@ -9,11 +10,13 @@ const PostDetail = () => {
 
   const { id } = useParams();
   const token = localStorage.getItem("token");
-  const [post, setPost] = useState<Post>();
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+  const [post, setPost] = useState<Post>();
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [collectionsInfo, setCollectionsInfo] = useState<Map<string, boolean>>(new Map());
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isAddToModalOpen, setIsAddToModalOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -48,7 +51,40 @@ const PostDetail = () => {
     }
 
     fetchPost();
-  }, [apiUrl])
+  }, [apiUrl, token, id]);
+
+  useEffect(() => {
+    const fetchCollections = async () => {
+      const response = await fetch(`${apiUrl}/api/collections`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        console.error("Failed to fetch collections");
+        return;
+      }
+
+      const data = await response.json();
+
+      const collectionInfo = new Map<string, boolean>();
+
+      data.forEach((collection: Collection) => {
+        if (collection.posts.some((p: Post) => p.id === post?.id)) {
+          collectionInfo.set(collection.id, true);
+        } else {
+          collectionInfo.set(collection.id, false);
+        }
+      });
+
+      setCollections(data);
+      setCollectionsInfo(collectionInfo);
+    };
+
+    fetchCollections();
+  }, [apiUrl, token, post]);
 
   const handleApprove = async () => {
     if (!token) {
@@ -92,7 +128,32 @@ const PostDetail = () => {
     }
 
     navigate(-1);
-  }
+  };
+
+  const handleAddTo = async () => {
+    collections.forEach(async (collection) => {
+      const isPostInCollection = collectionsInfo.get(collection.id);
+      const action = isPostInCollection ? "add" : "remove";
+
+      const response = await fetch(`${apiUrl}/api/collections/${collection.id}/${action}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          postId: post?.id
+        })
+      });
+
+      if (!response.ok) {
+        console.error("Failed to add post to collection");
+        return;
+      }
+    });
+    
+    setIsAddToModalOpen(false);
+  };
 
   const toggleFavorite = async () => {
     if (!token) {
@@ -115,7 +176,7 @@ const PostDetail = () => {
 
     post.favorite = !post.favorite;
     setPost({...post});
-  }
+  };
 
   return (
     <>
@@ -156,7 +217,11 @@ const PostDetail = () => {
                 </div>
 
                 <div className="flex justify-end items-center gap-4 mt-4">
-                  <button className="px-4 py-2 inline-block font-semibold text-white bg-purple-500 rounded-lg hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                  <button
+                    className="px-4 py-2 inline-block font-semibold text-white bg-purple-500 rounded-lg
+                              hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    onClick={() => setIsAddToModalOpen(true)}
+                  >
                     Add to
                   </button>
 
@@ -195,7 +260,7 @@ const PostDetail = () => {
                   {(user.role === 'admin' || user.role === 'moderator' || user.id === post?.author.id) && <div>
                     <button
                       className="red-button"
-                      onClick={() => setIsModalOpen(true)}
+                      onClick={() => setIsDeleteModalOpen(true)}
                     >
                       Delete
                     </button>
@@ -221,7 +286,7 @@ const PostDetail = () => {
                 </div>
               }
               
-            </div>
+          </div>
 
           { post?.cards && post.cards.length > 0 ? (
             <div className="p-6">
@@ -240,7 +305,7 @@ const PostDetail = () => {
         </div>
       </div>
 
-      {isModalOpen && <div className="fixed inset-0 flex items-center justify-center bg-black/50">
+      {isDeleteModalOpen && <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
             <h2 className="text-lg font-bold">Are you sure you want to delete this post?</h2>
             <span className="text-gray-600 block mb-4">Data cannot be restored</span>
@@ -253,13 +318,52 @@ const PostDetail = () => {
               </button>
               
               <button className="green-button"
-                onClick={() => setIsModalOpen(false)}
+                onClick={() => setIsDeleteModalOpen(false)}
               >
                 No
               </button>
             </div>
           </div>
-        </div>}
+      </div>}
+
+      {isAddToModalOpen && <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+          <h2 className="text-lg font-bold mb-6">Choose collections to add the post</h2>
+          {collections.map((collection) => (
+            <div key={collection.id} className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id={collection.id}
+                checked={collectionsInfo.get(collection.id)}
+                onChange={() => {
+                  const newCollectionsInfo = new Map(collectionsInfo);
+                  newCollectionsInfo.set(collection.id, !collectionsInfo.get(collection.id));
+                  setCollectionsInfo(newCollectionsInfo);
+                }}
+                className="h-5 w-5 accent-purple-500 focus:ring-purple-400"
+              />
+              <label htmlFor={collection.id} className="text-lg font-medium text-gray-700">
+                {collection.name}
+              </label>
+            </div>
+          ))}
+
+
+            <div className="flex justify-center gap-4 mt-6">
+              <button className="green-button"
+                onClick={handleAddTo}
+              >
+                Save
+              </button>
+                
+              <button className="red-button"
+                onClick={() => setIsAddToModalOpen(false)}
+              >
+                Cancel
+              </button>
+            </div>
+        </div>
+      </div>}
     </>
   );
 };

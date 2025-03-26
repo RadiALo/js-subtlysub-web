@@ -82,7 +82,7 @@ const Home = () => {
         </div>
       </div>
 
-      <h1 className="mt-4 text-3xl font-bold text-white mb-6">Your Posts</h1>
+      <h1 className="mt-12 text-3xl font-bold text-white mb-6">Your Posts</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {myPosts.map(post => (
           <PostItem key={post.id} post={post} />

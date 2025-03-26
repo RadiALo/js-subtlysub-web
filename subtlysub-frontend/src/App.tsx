@@ -10,6 +10,7 @@ import PostDetail from "./pages/Post/PostDetail";
 import CollectionDetail from "./pages/Collection/CollectionDetail";
 import EditPost from "./pages/Post/EditPost";
 import CreateCollection from "./pages/Collection/CreateCollection";
+import EditCollection from "./pages/Collection/EditCollection";
 
 function App() {
   return (
@@ -21,10 +22,12 @@ function App() {
           <Route path="/signup" element={<SignUp />}/>
           <Route path="/explore" element={<Explore />}/>
           <Route path="/home" element={<Home />}/>
+          <Route path="/" element={<Home />}/>
           <Route path="/posts/create" element={<CreatePost />}/>
           <Route path="/posts/:id/edit" element={<EditPost />}/>
           <Route path="/posts/:id" element={<PostDetail />}/>
           <Route path="/collections/create" element={<CreateCollection />}/>
+          <Route path="/collections/:id/edit" element={<EditCollection />}/>
           <Route path="/collections/:id" element={<CollectionDetail />}/>
         </Routes>      
       </div>

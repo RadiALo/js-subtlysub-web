@@ -1,10 +1,11 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
-const CreateCollection = () => {
+const EditCollection = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
+  const token = localStorage.getItem("token");
 
-  const navigate = useNavigate();
+  const { id } = useParams();
 
   const [error, setError] = useState("");
   const [name, setName] = useState("");
@@ -50,8 +51,8 @@ const CreateCollection = () => {
     }
     
     try {
-      const response = await fetch(`${apiUrl}/api/collections`, {      
-        method: "POST",
+      const response = await fetch(`${apiUrl}/api/collections/${id}`, {      
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
@@ -60,11 +61,8 @@ const CreateCollection = () => {
       )});
 
       if (!response.ok) {
-        throw new Error("Failed to create post");
+        throw new Error("Failed to update collection");
       }
-
-      const data = await response.json();
-      navigate(`/collections/${data.id}`);
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
@@ -73,6 +71,30 @@ const CreateCollection = () => {
       }
     }
   };
+
+  useEffect(() => {
+    const fetchCollection = async () => {
+      const response = await fetch(`${apiUrl}/api/collections/${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        console.error("Failed to fetch collection");
+        return;
+      }
+
+      const collection = await response.json();
+      setName(collection.name);
+      setDescription(collection.description);
+      setImageUrl(collection.imageUrl);
+    }
+
+    fetchCollection();
+  }, [apiUrl]);
 
   return (
     <div className="max-w-2xl mx-auto mt-6 p-6 bg-white rounded-lg shadow-md space-y-6">
@@ -101,10 +123,10 @@ const CreateCollection = () => {
         <button 
           type="submit" 
           className="primary-button"
-        >Create Collection</button>
+        >Save changes</button>
       </form>
     </div>
   );
 };
 
-export default CreateCollection;
+export default EditCollection;
