@@ -4,7 +4,7 @@ import { Post } from "../../types/Post";
 import CardItem from "../../components/CardItem";
 
 type ProgressItem = {
-  id: string;
+  id: number;
   word: string;
   translation: string;
   learned: boolean;
@@ -54,9 +54,8 @@ const Learn = () => {
         return;
       }
 
-      if (!learn.progress) {
-        learn.progress = post?.cards.map(card => ({ id: card.id, word: card.word, translation: card.translation, learned: false })) || [];
-      }
+      learn.progress = post?.cards.map(card => ({ id: card.id, word: card.word, translation: card.translation, learned:
+        (learn.progress && learn.progress.find((c: ProgressItem) => c.id === card.id)?.learned) })) || [];
 
       setProgress(learn.progress);
     };
@@ -109,14 +108,14 @@ const Learn = () => {
 
               <div className="mt-4 mb-4">{post?.description}</div>
             </div>
-            <div>
+            {onlyNotLearned().length > 0 && <div>
                 <Link
                   to="./app"
                   className="w-full text-center px-4 py-2 font-semibold inline-block text-white
                   bg-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400">
                   Start
                 </Link>
-            </div>
+            </div>}
         </div>
 
         <div className="px-6 pb-4">
@@ -127,11 +126,14 @@ const Learn = () => {
                   Learned
                 </h1>
                 <ul className="mt-2 grid grid-cols-1 lg:grid-cols-2 gap-3">
-                  {onlyLearned().map((card) => (
+                  {onlyLearned().slice(0, 10).map((card) => (
                     <li key={card.word}>
                       <CardItem card={card} />
                     </li>
                   ))}
+                  {onlyLearned().length > 10 && <p className="text-gray-600 mt-4 text-md">
+                    And {onlyLearned().length - 10} more
+                  </p>}
                 </ul>
               </div>
               
@@ -141,12 +143,15 @@ const Learn = () => {
                   To learn
                 </h1>
                 <ul className="mt-2 grid grid-cols-1 lg:grid-cols-2 gap-3">
-                  {onlyNotLearned().map((card) => (
+                  {onlyNotLearned().slice(0, 10).map((card) => (
                     <li key={card.word}>
                       <CardItem card={card} />
                     </li>
                   ))}
                 </ul>
+                {onlyNotLearned().length > 10 && <p className="text-gray-600 mt-4 text-md">
+                  And {onlyNotLearned().length - 10} more
+                </p>}
               </div>
               
               </div>

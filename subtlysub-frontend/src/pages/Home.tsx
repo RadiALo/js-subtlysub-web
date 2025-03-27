@@ -13,6 +13,7 @@ const Home = () => {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const [myPosts, setMyPosts] = useState<Post[]>([]);
+  const [recentPosts, setRecentPosts] = useState<Post[]>([]);
 
   const [myCollections, setMyCollections] = useState<Collection[]>([]);
 
@@ -29,6 +30,29 @@ const Home = () => {
         
         const data = await response.json();
         setMyPosts(data);
+      } catch (error) {
+        console.error("Error fetching tags: ", error);
+      }
+    }
+
+    fetchPosts();
+  }, [apiUrl]);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/api/posts/recent`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+    
+        if (!response.ok) {
+          throw new Error("Failed to fetch posts");
+        }
+        
+        const data = await response.json();
+        setRecentPosts(data);
       } catch (error) {
         console.error("Error fetching tags: ", error);
       }
@@ -63,11 +87,23 @@ const Home = () => {
   return (
     <div className="max-w-5xl mx-auto p-6">
       <h1 className="text-3xl font-bold text-white mb-6">
+        Continue studying
+      </h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        {recentPosts.slice(0, 10).map(post => (
+          <PostItem key={post.id} post={post} />
+        ))}
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+      </div>
+
+      <h1 className="mt-12 text-3xl font-bold text-white mb-6">
         Your Collections
       </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {myCollections.map(collection => (
+        {myCollections.slice(0, 10).map(collection => (
           <CollectionItem key={collection.id} collection={collection} />
         ))}
         
@@ -82,9 +118,11 @@ const Home = () => {
         </div>
       </div>
 
-      <h1 className="mt-12 text-3xl font-bold text-white mb-6">Your Posts</h1>
+      <h1 className="mt-12 text-3xl font-bold text-white mb-6">
+        Your Posts
+      </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {myPosts.map(post => (
+        {myPosts.slice(0, 10).map(post => (
           <PostItem key={post.id} post={post} />
         ))}
 

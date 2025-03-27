@@ -48,7 +48,7 @@ export const updateLearn = async (req, res) => {
         },
       },
       data: {
-        progress,
+        progress
       },
     });
 

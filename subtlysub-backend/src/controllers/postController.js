@@ -73,6 +73,7 @@ export const getPosts = async (req, res) => {
         where: {authorId},
         include: {tags: true, author: true }
       });
+
       res.json(posts);
     } else {
       const posts = await prisma.post.findMany({
@@ -144,8 +145,12 @@ export const updatePost = async (req, res) => {
     }
 
     const syncedTags = await syncTags(tags);
-    console.log(user.role)
     const pending = (user.role !== "admin" && user.role !== "moderator");
+
+    const currentCards = existingPost.cards.map(card => card.id);
+    const newCards = cards.map(card => ({ word: card.word, translation: card.translation }));
+    const cardsToDelete = existingPost.cards.filter(card => !cards.some(newCard => newCard.word === card.word)).map(card => card.id);
+    const cardsToCreate = newCards.filter(newCard => !existingPost.cards.some(card => card.word === newCard.word));
 
     const updatedPost = await prisma.post.update({
       where: { id },
@@ -157,11 +162,10 @@ export const updatePost = async (req, res) => {
           set: syncedTags.map((tag) => ({ id: tag.id }))
         },
         cards: {
-          deleteMany: { postId: id },
-          create: cards.map((card) => ({
-            word: card.word,
-            translation: card.translation,
-          })),
+          deleteMany: {
+            id: { in: cardsToDelete }
+          },
+          create: cardsToCreate
         }
       }
     });
@@ -182,7 +186,6 @@ export const deletePost = async (req, res) => {
       where: { id },
     });
 
-    console.log(id);
 
     if (!existingPost) {
       return res.status(404).json({ message: "Post not found" });
@@ -226,5 +229,31 @@ export const approvePost = async (req, res) => {
 
   } catch (error) {
     res.json(error);
+  }
+}
+
+export const getRecentLearnedPosts = async (req, res) => {
+  try {
+    const { user } = req;
+
+    const learns = await prisma.learn.findMany({
+      where: { userId: user.id },
+      orderBy: { lastViewed: "desc" },
+      include: { 
+        post: {
+          include: {
+            tags: true, 
+            author: true
+          }
+        }
+      }
+    });
+
+    const posts = learns.map(learn => learn.post);
+
+    res.json(posts);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching posts", error });
+    console.error(error);
   }
 }

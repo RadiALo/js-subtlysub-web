@@ -6,9 +6,9 @@ import { Collection } from "../../types/Collection";
 
 const PostDetail = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
+  const token = localStorage.getItem("token");
 
   const { id } = useParams();
-  const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const [post, setPost] = useState<Post>();
