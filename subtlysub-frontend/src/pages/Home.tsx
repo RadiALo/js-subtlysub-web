@@ -8,12 +8,13 @@ import CollectionItem from "../components/CollectionItem";
 const Home = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const [myPosts, setMyPosts] = useState<Post[]>([]);
   const [recentPosts, setRecentPosts] = useState<Post[]>([]);
+  const [recentVisibleCount, setRecentVisibleCount] = useState(6);
 
   const [myCollections, setMyCollections] = useState<Collection[]>([]);
 
@@ -64,7 +65,7 @@ const Home = () => {
   useEffect(() => {
     const fetchCollections = async () => {
       try {
-        const response = await fetch(`${apiUrl}/api/collections/`, {
+        const response = await fetch(`${apiUrl}/api/collections`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -84,20 +85,31 @@ const Home = () => {
     fetchCollections();
   }, [apiUrl])
 
+
+  const loadMoreRecent = () => {
+    setRecentVisibleCount(prev => prev + 6);
+  };
+
   return (
     <div className="max-w-5xl mx-auto p-6">
       <h1 className="text-3xl font-bold text-white mb-6">
-        Continue studying
+        Continue Studying
       </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-        {recentPosts.slice(0, 10).map(post => (
-          <PostItem key={post.id} post={post} />
+        {recentPosts.slice(0, recentVisibleCount).map(post => (
+          <PostItem key={post.id} post={post} />  
         ))}
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
-      </div>
-
+      {recentVisibleCount < recentPosts.length && (
+        <div className="m-auto flex justify-center w-60">
+          <button
+            onClick={loadMoreRecent}
+            className="primary-button"
+          >
+            Load More
+          </button>
+        </div>
+      )}
       <h1 className="mt-12 text-3xl font-bold text-white mb-6">
         Your Collections
       </h1>

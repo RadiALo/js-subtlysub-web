@@ -71,14 +71,16 @@ export const getPosts = async (req, res) => {
       console.log(authorId)
       const posts = await prisma.post.findMany({
         where: {authorId},
-        include: {tags: true, author: true }
+        include: {tags: true, author: true },
+        orderBy: {createdAt: "desc"}
       });
 
       res.json(posts);
     } else {
       const posts = await prisma.post.findMany({
         where: {pending: false},
-        include: {tags: true, author: true }
+        include: {tags: true, author: true },
+        orderBy: {createdAt: "desc"}
       });
       res.json(posts);
     }
@@ -87,8 +89,14 @@ export const getPosts = async (req, res) => {
   }
 }
 
-export const getUnpublishedPosts = async (req, res) => {
+export const getPendingPosts = async (req, res) => {
   try {
+    const { user } = req;
+
+    if (user.role !== "admin" && user.role !== "moderator") {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
     const posts = await prisma.post.findMany({
       where: { pending },
       include: {tags: true, author: true }
@@ -252,6 +260,45 @@ export const getRecentLearnedPosts = async (req, res) => {
     const posts = learns.map(learn => learn.post);
 
     res.json(posts);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching posts", error });
+    console.error(error);
+  }
+}
+
+export const getTrendingPosts = async (req, res) => {
+  try {
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+    const posts = await prisma.post.findMany({
+      where: {
+        pending: false,
+        learns: {
+          some: {
+            lastViewed: {
+              gte: oneMonthAgo,
+            },
+          },
+        },
+      },
+      include: {
+        learns: true,
+        tags: true,
+        author: true,
+        _count: {
+          select: {
+            learns: true, 
+          },
+        },
+      },
+      orderBy: {
+        learns: {
+          _count: "desc",
+        },
+      },
+    });
+    return res.json(posts);
   } catch (error) {
     res.status(500).json({ message: "Error fetching posts", error });
     console.error(error);
