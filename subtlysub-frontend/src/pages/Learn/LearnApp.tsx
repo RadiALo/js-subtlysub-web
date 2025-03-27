@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Post } from "../../components/PostItem";
+import { Post } from "../../types/Post";
+import { useTranslation } from 'react-i18next';
 
 type ProgressItem = {
   id: number;
@@ -10,6 +11,8 @@ type ProgressItem = {
 };
 
 const LearnApp = () => {
+  const { t } = useTranslation();
+
   const apiUrl = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem("token");
 
@@ -159,7 +162,7 @@ const LearnApp = () => {
 
   return !sessionFinished ? (
     <div className="relative p-6 max-w-md mx-auto bg-white rounded-xl shadow-md space-y-4">
-      <h1 className="text-2xl font-bold text-center">Learn Words</h1>
+      <h1 className="text-2xl font-bold text-center">{t('learnWords')}</h1>
 
       <div className="flex flex-col items-center gap-2">
         <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
@@ -169,7 +172,7 @@ const LearnApp = () => {
           ></div>
         </div>
         <span className="text-gray-600">
-          Learned: {totalLearned()}/{progress.length}
+          {t('learned')}: {totalLearned()}/{progress.length}
         </span>
       </div>
 
@@ -186,10 +189,10 @@ const LearnApp = () => {
       {translationVisible ? (
         <div className="flex justify-between space-x-6">
           <button className="green-button" onClick={handleKnow}>
-            I know
+            {t('iKnow')}
           </button>
           <button className="red-button" onClick={handleDontKnow}>
-            I don't know
+            {t('dontKnow')}
           </button>
         </div>
       ) : (
@@ -198,7 +201,7 @@ const LearnApp = () => {
             className="primary-button"
             onClick={() => setTranslationVisible(true)}
           >
-            Show translation
+            {t('showTranslation')}
           </button>
         </div>
       )}
@@ -207,7 +210,7 @@ const LearnApp = () => {
     </div>
   ) : (
     <div className="relative p-6 max-w-md mx-auto bg-white rounded-xl shadow-md text-center space-y-4">
-      <h1 className="text-3xl font-extrabold text-purple-600">🎉 Good job! 🎉</h1>
+      <h1 className="text-3xl font-extrabold text-purple-600">🎉 {t('goodJob')} 🎉</h1>
 
       {totalLearned() === progress.length ? (
         <p className="text-lg text-gray-700">
@@ -215,7 +218,7 @@ const LearnApp = () => {
         </p>      
       ) : (
         <p className="text-lg text-gray-700">
-          You have learned <span className="font-bold text-purple-500">{totalLearned() - progress.filter(card => card.learned).length}</span> new words!
+          {t('youHaveLearnedNewWords1')} <span className="font-bold text-purple-500">{totalLearned() - progress.filter(card => card.learned).length}</span> {t('youHaveLearnedNewWords2')}
         </p>
       )}
 
@@ -227,7 +230,7 @@ const LearnApp = () => {
           ></div>
         </div>
         <span className="text-gray-600">
-          Learned: {totalLearned()}/{progress.length}
+          {t('learned')}: {totalLearned()}/{progress.length}
         </span>
         
         <button className="absolute top-4 right-4 cursor-pointer" onClick={handleLeave}>✖</button>
@@ -235,10 +238,10 @@ const LearnApp = () => {
       
       <div className="flex justify-between space-x-6">
         {totalLearned() !== progress.length &&
-          <button className="green-button" onClick={handleRestartSession}>Continue</button>
+          <button className="green-button" onClick={handleRestartSession}>{t('continue')}</button>
         }
 
-        <button className="red-button" onClick={handleLeave}>Go back</button>
+        <button className="red-button" onClick={handleLeave}>{t('goBack')}</button>
       </div>
     </div>
   );

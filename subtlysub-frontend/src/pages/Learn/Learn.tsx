@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Post } from "../../types/Post";
 import CardItem from "../../components/CardItem";
+import { useTranslation } from 'react-i18next';
 
 type ProgressItem = {
   id: number;
@@ -11,6 +12,8 @@ type ProgressItem = {
 };
 
 const Learn = () => {
+  const { t } = useTranslation();
+
   const apiUrl = import.meta.env.VITE_API_URL;
   
   const { id } = useParams();
@@ -82,7 +85,7 @@ const Learn = () => {
 
           {post?.pending && (
             <div className="absolute top-2 right-2 bg-purple-500 text-white text-sm font-bold px-3 py-1 rounded-md">
-              Pending
+              {t('pending')}
             </div>
           )}
       </div>
@@ -95,7 +98,7 @@ const Learn = () => {
               </h1>
 
               <p className="text-gray-500 text-sm">
-                by {post?.author.username}
+                {t('by')} {post?.author.username}
               </p>
 
               <div className="mb-4 tag-container">

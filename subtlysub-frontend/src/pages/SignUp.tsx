@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 const SignUp = () => {
+  const { t } = useTranslation();
   const apiUrl = import.meta.env.VITE_API_URL;
   
   const [email, setEmail] = useState("");
@@ -44,7 +46,7 @@ const SignUp = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-                <label className="block text-gray-700">Email</label>
+                <label className="block text-gray-700">{t('email')}</label>
                 <input 
                   type="email"
                   value={email}
@@ -55,7 +57,7 @@ const SignUp = () => {
           </div>
 
           <div>
-                <label className="block text-gray-700">Username</label>
+                <label className="block text-gray-700">{t('login')}</label>
                 <input 
                   type="text"
                   value={username}
@@ -66,7 +68,7 @@ const SignUp = () => {
           </div>
 
           <div>
-                <label className="block text-gray-700">Password</label>
+                <label className="block text-gray-700">{t('password')}</label>
                 <input 
                   type="password"
                   value={password}
@@ -80,11 +82,11 @@ const SignUp = () => {
             type="submit"
             className="primary-button"
           >
-            Sign Up
+            {t('signup')}
           </button>
 
           <p className="text-center text-gray-600">
-            Already have an account? <Link to="/login" className="text-purple-600 hover:underline">Log in</Link>
+            {t('alreadyHaveAccount')} <Link to="/login" className="text-purple-600 hover:underline">{t('login')}</Link>
           </p>
         </form>
       </div>

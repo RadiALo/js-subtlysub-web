@@ -1,11 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { Collection } from "../types/Collection";
+import { useTranslation } from 'react-i18next';
 
 export interface CollectionProps {
   collection: Collection;
 }
 
 const CollectionItem = ({ collection }: CollectionProps) => {
+  const { t } = useTranslation();
   const apiUrl = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
@@ -34,7 +36,7 @@ const CollectionItem = ({ collection }: CollectionProps) => {
         </p>
 
         <div className="text-sm text-gray-500 mt-2">
-          {collection.posts.length} {collection.posts.length === 1 ? "post" : "posts"}
+          {collection.posts.length} {collection.posts.length === 1 ? t('post') : t('posts')}
         </div>
       </div>
     </div>

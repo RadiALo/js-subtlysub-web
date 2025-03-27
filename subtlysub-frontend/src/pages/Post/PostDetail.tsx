@@ -3,8 +3,11 @@ import { Post } from "../../types/Post";
 import { useEffect, useState } from "react";
 import CardItem from "../../components/CardItem";
 import { Collection } from "../../types/Collection";
+import { useTranslation } from 'react-i18next';
 
 const PostDetail = () => {
+  const { t } = useTranslation();
+
   const apiUrl = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem("token");
 
@@ -200,7 +203,7 @@ const PostDetail = () => {
 
           {post?.pending && (
             <div className="absolute top-2 right-2 bg-purple-500 text-white text-sm font-bold px-3 py-1 rounded-md">
-              Pending
+              {t('pending')}
             </div>
           )}
         </div>
@@ -212,7 +215,7 @@ const PostDetail = () => {
                 {post?.title}
               </h1>
               <p className="text-gray-500 text-sm">
-                by {post?.author.username}
+                {t('by')} {post?.author.username}
               </p>
 
               <div className="mb-4 tag-container">
@@ -231,7 +234,7 @@ const PostDetail = () => {
                               hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-400"
                   onClick={() => setIsAddToModalOpen(true)}
                 >
-                  Add to
+                  {t('addTo')}
                 </button>
 
                 <button
@@ -253,7 +256,7 @@ const PostDetail = () => {
                 onClick={() => navigate(`/collections/${post.linkedColl.id}`)}
               >
                 <span className="text-sm font-semibold tracking-wide">
-                  Discover more:
+                  {t('discoverMore')}
                 </span>
 
                 <img
@@ -274,7 +277,7 @@ const PostDetail = () => {
                   to="./learn"
                   className="w-full text-center px-3 py-2 font-semibold inline-block text-white
                 bg-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400">
-                  Start Learning
+                  {t('startLearning')}
                 </Link>
               </div>
 
@@ -290,7 +293,7 @@ const PostDetail = () => {
                         className="red-button cursor-pointer"
                         onClick={() => setIsDeleteModalOpen(true)}
                       >
-                        Delete
+                        {t('delete')}
                       </button>
                     </div>
                   )}
@@ -300,7 +303,7 @@ const PostDetail = () => {
                     user.id === post?.author.id) && (
                     <div>
                       <Link to="./edit" className="primary-button">
-                        Edit
+                        {t('edit')}
                       </Link>
                     </div>
                   )}
@@ -312,7 +315,7 @@ const PostDetail = () => {
                           className="primary-button"
                           onClick={handleApprove}
                         >
-                          Approve
+                          {t('approve')}
                         </button>
                       </div>
                     )}
@@ -324,7 +327,7 @@ const PostDetail = () => {
           {post?.cards && post.cards.length > 0 ? (
             <div className="p-6">
               <h1 className="text-2xl font-bold text-gray-800">
-                Vocabulary Preview:
+                {t('vocabularyPreview')}
               </h1>
               <ul className="mt-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
                 {post.cards.slice(0, 10).map((card) => (
@@ -335,7 +338,7 @@ const PostDetail = () => {
               </ul>
             </div>
           ) : (
-            <p className="mt-4 text-gray-500">No words available</p>
+            <p className="mt-4 text-gray-500">{t('noWordsAvailable')}</p>
           )}
         </div>
       </div>
@@ -344,22 +347,22 @@ const PostDetail = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
             <h2 className="text-lg font-bold">
-              Are you sure you want to delete this post?
+              {t('deleteTitle')}
             </h2>
             <span className="text-gray-600 block mb-4">
-              Data cannot be restored
+              {t('deleteSub')}
             </span>
 
             <div className="flex justify-center gap-4">
               <button className="red-button" onClick={handleDelete}>
-                Yes
+                {t('yes')}
               </button>
 
               <button
                 className="green-button"
                 onClick={() => setIsDeleteModalOpen(false)}
               >
-                No
+                {t('no')}
               </button>
             </div>
           </div>
@@ -370,7 +373,7 @@ const PostDetail = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
             <h2 className="text-lg font-bold mb-6">
-              Choose collections to add the post
+              {t('chooseCollection')}
             </h2>
             {collections.map((collection) => (
               <div key={collection.id} className="flex items-center space-x-2">
@@ -399,14 +402,14 @@ const PostDetail = () => {
 
             <div className="flex justify-center gap-4 mt-6">
               <button className="green-button" onClick={handleAddTo}>
-                Save
+                {t('save')}
               </button>
 
               <button
                 className="red-button"
                 onClick={() => setIsAddToModalOpen(false)}
               >
-                Cancel
+                {t('cancel')}
               </button>
             </div>
           </div>

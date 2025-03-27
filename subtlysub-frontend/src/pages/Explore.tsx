@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import PostItem from "../components/PostItem";
 import { Post } from "../types/Post";
+import { useTranslation } from 'react-i18next';
 
 const Explore = () => {
+  const { t } = useTranslation();
+
   const apiUrl = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -95,7 +98,7 @@ const Explore = () => {
 
   return (
     <div className="max-w-5xl mx-auto p-6">
-      <h1 className="text-3xl font-bold text-white mb-6">Trending Posts</h1>
+      <h1 className="text-3xl font-bold text-white mb-6">{t('trendingPosts')}</h1>
 
       {trendingPosts && trendingPosts.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -104,17 +107,17 @@ const Explore = () => {
           ))}
         </div>
       ) : (
-        <p className="text-white">No trending posts found</p>
+        <p className="text-white">{t('noTrendingPosts')}</p>
       )}
       {trendingVisibleCount < trendingPosts.length && (
         <div className="m-auto flex justify-center w-60">
           <button onClick={loadMoreTrending} className="primary-button">
-            Load More
+            {t('loadMore')}
           </button>
         </div>
       )}
 
-      <h1 className="mt-12 text-3xl font-bold text-white mb-6">Newest Posts</h1>
+      <h1 className="mt-12 text-3xl font-bold text-white mb-6">{t('newestPosts')}</h1>
       {newestPosts && newestPosts.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {newestPosts.slice(0, newestVisibleCount).map((post) => (
@@ -122,12 +125,12 @@ const Explore = () => {
           ))}
         </div>
       ) : (
-        <p className="text-white">No newest posts found</p>
+        <p className="text-white">{t('noNewestPosts')}</p>
       )}
       {newestVisibleCount < newestPosts.length && (
         <div className="m-auto flex justify-center w-60">
           <button onClick={loadMoreNewest} className="primary-button">
-            Load More
+            {t('loadMore')}
           </button>
         </div>
       )}
@@ -135,7 +138,7 @@ const Explore = () => {
       {(user.role === "admin" || user.role == "moderator") && (
         <>
           <h1 className="mt-12 text-3xl font-bold text-white mb-6">
-            Pending Posts
+            {t('pendingPosts')}
           </h1>
 
           {pendingPosts && pendingPosts.length > 0 ? (
@@ -145,13 +148,14 @@ const Explore = () => {
               ))}
             </div>
           ) : (
-            <p className="text-white">No pending posts found</p>
+            <p className="text-white">
+            {t('noPendingPosts')}</p>
           )}
 
           {pendingPostsVisibleCount < pendingPosts.length && (
             <div className="m-auto flex justify-center w-60">
               <button onClick={loadMorePending} className="primary-button">
-                Load More
+                {t('loadMore')}
               </button>
             </div>
           )}

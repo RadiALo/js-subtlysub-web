@@ -13,6 +13,7 @@ import CreateCollection from "./pages/Collection/CreateCollection";
 import EditCollection from "./pages/Collection/EditCollection";
 import Learn from "./pages/Learn/Learn";
 import LearnApp from "./pages/Learn/LearnApp";
+import './i18n';
 
 function App() {
   return (

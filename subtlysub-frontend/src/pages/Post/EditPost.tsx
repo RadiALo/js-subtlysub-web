@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 const EditPost = () => {
+  const { t } = useTranslation();
+
   const apiUrl = import.meta.env.VITE_API_URL;
 
   const { id } = useParams();
@@ -20,7 +23,6 @@ const EditPost = () => {
   useEffect(() => {
     const handleBeforeUnload = (event : BeforeUnloadEvent) => {
       event.preventDefault();
-      event.returnValue = "";
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -114,12 +116,12 @@ const EditPost = () => {
     e.preventDefault();
 
     if (!title || !description) {
-      setError("Title and description is required");
+      setError(t('titleAndDescriptionRequired'));
       return;
     }
 
     if (cards.some((card) => !card.word || !card.translation)) {
-      setError("Fill all words");
+      setError(t('fillAllCards'));
       return;
     }
 
@@ -175,26 +177,32 @@ const EditPost = () => {
 
   return (
     <div className="max-w-2xl mx-auto mt-6 p-6 bg-white rounded-lg shadow-md space-y-6">
-      <h1 className="text-2xl font-bold text-gray-800">Edit Post</h1>
+      <h1 className="text-2xl font-bold text-gray-800">{t('editPost')}</h1>
       {error && <p className="text-red-500 text-center">{error}</p>}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text" 
-          placeholder="Title" 
+          placeholder={t('title')}
           value={title} 
           onChange={(e) => setTitle(e.target.value)} 
           className="input-field"
         />
 
         <textarea 
-          placeholder="Description" 
+          placeholder={t('description')}
           value={description} 
           onChange={(e) => setDescription(e.target.value)} 
           className="input-field"
         />
-        <input type="file" onChange={(e) => { if (e.target.files) uploadImage(e.target.files[0]) }} />
-        <h2 className="text-lg font-semibold">Tags</h2>
+        <input 
+          type="file" 
+          onChange={(e) => { if (e.target.files) uploadImage(e.target.files[0]) }} 
+          className=" file:bg-purple-500 file:text-white file:px-4 file:py-2 file:rounded-md file:hover:bg-purple-600 file:cursor-pointer file:mr-4"
+        />
+        {imageUrl && <img src={`${apiUrl}${imageUrl}`} alt="Collection icon" className="rounded w-full max-h-32 object-cover" />}
+        
+        <h2 className="text-lg font-semibold">{t('tags')}</h2>
         <div className="flex flex-wrap gap-2">
           {tags.map((tag) => (
             <span 
@@ -212,7 +220,7 @@ const EditPost = () => {
             onChange={(e) => handleAddTag(e.target.value)} 
             className="input-field"
           >
-            <option value="">Select a tag</option>
+            <option value="">{t('selectTag')}</option>
             {allTags.filter((tag) => !tags.includes(tag)).map((tag) => (
               <option key={tag} value={tag}>{tag}</option>
             ))}
@@ -222,7 +230,7 @@ const EditPost = () => {
         <div className="flex gap-2">
           <input 
             type="text" 
-            placeholder="New tag" 
+            placeholder={t('newTag')}
             value={newTag} 
             onChange={(e) => setNewTag(e.target.value)} 
             className="flex-grow input-field"
@@ -235,20 +243,20 @@ const EditPost = () => {
           </button>
         </div>
 
-        <h2 className="text-lg font-semibold">Cards</h2>
+        <h2 className="text-lg font-semibold">{t('cards')}</h2>
         <div className="space-y-2">
           {cards.map((card, index) => (
             <div key={index} className="flex gap-2 items-center">
               <input 
                 type="text" 
-                placeholder="Word" 
+                placeholder={t('word')} 
                 value={card.word}
                 onChange={(e) => {handleChangeWord(index, e.target.value)}}
                 className="flex-grow input-field"
               />
               <input 
                 type="text" 
-                placeholder="Translation" 
+                placeholder={t('translation')}
                 value={card.translation} 
                 onChange={(e) => {handleChangeTranslation(index, e.target.value)}}
                 className="flex-grow input-field"
@@ -267,11 +275,11 @@ const EditPost = () => {
           type="button" 
           className="green-button"
           onClick={handleAddCard}
-        >+ Add Card</button>
+        >{t('addCard')}</button>
         <button 
           type="submit" 
           className="primary-button"
-        >Save</button>
+        >{t('save')}</button>
       </form>
     </div>
   );

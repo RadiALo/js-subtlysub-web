@@ -1,11 +1,14 @@
 import { useNavigate } from "react-router-dom";
-import { Post } from "../types/Post"
+import { Post } from "../types/Post";
+import { useTranslation } from 'react-i18next';
 
 export interface PostProps {
   post: Post;
 }
 
 const PostItem = ({ post }: PostProps) => {
+  const { t } = useTranslation();
+
   const apiUrl = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
@@ -36,7 +39,7 @@ const PostItem = ({ post }: PostProps) => {
 
       <div className="p-4">
         <h2 className="text-xl font-bold text-gray-800">{post.title}</h2>
-        <p className="text-sm text-gray-500">by {post.author.username}</p>
+        <p className="text-sm text-gray-500">{t('by')} {post.author.username}</p>
         <p className="text-gray-700 mt-2 h-14">{post.description.length < 60 ? post.description : `${post.description.slice(0, 60).trim()}...`}</p>
 
         <div className="tag-container">

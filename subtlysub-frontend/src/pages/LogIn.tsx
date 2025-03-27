@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 const LogIn = () => {
+  const { t } = useTranslation();
   const apiUrl = import.meta.env.VITE_API_URL;
   
   const [username, setUsername] = useState("");
@@ -58,12 +60,12 @@ const LogIn = () => {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md p-8 space-y-6 bg-gray-200 shadow-lg rounded-2xl">
-          <h2 className="text-2xl font-bold text-center text-gray-800">Log In</h2>
+          <h2 className="text-2xl font-bold text-center text-gray-800">{t('login')}</h2>
           {errorMsg && <p className="text-red-500 text-center">{errorMsg}</p>}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-gray-700">Username</label>
+              <label className="block text-gray-700">{t('username')}</label>
               <input 
                 type="text"
                 value={username}
@@ -74,7 +76,7 @@ const LogIn = () => {
             </div>
 
             <div>
-              <label className="block text-gray-700">Password</label>
+              <label className="block text-gray-700">{t('password')}</label>
               <input 
                 type="password" 
                 value={password}
@@ -88,12 +90,12 @@ const LogIn = () => {
               type="submit"
               className="primary-button"
             >
-              Log In
+              {t('login')}
             </button>
           </form>
 
           <p className="text-center text-gray-600">
-            Don't have an account? <Link to="/signup" className="text-purple-600 hover:underline">Sign up</Link>
+            {t('dontHaveAccount')} <Link to="/signup" className="text-purple-600 hover:underline">{t('signup')}</Link>
           </p>
         </div>
     </div>    
