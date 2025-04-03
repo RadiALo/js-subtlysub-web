@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
+import ImageChoose from "../../components/ImageChoose";
 
 const CreatePost = () => {
   const { t } = useTranslation();
@@ -86,9 +87,7 @@ const CreatePost = () => {
     setCards(newCards);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     if (!title || !description) {
       setError(t('titleAndDescriptionRequired'));
       return;
@@ -136,30 +135,12 @@ const CreatePost = () => {
     }
   };
 
-  const uploadImage = async (file: File) => {
-    try {
-      const formData = new FormData();
-      formData.append("image", file);
-
-      const response = await fetch(`${apiUrl}/upload`, {
-        method: "POST",
-        body: formData
-      });
-
-      const data = await response.json();
-      setImageUrl(data.filePath);
-      console.log("Uploaded file: ", data);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
   return (
     <div className="max-w-2xl mx-auto mt-6 p-6 bg-white rounded-lg shadow-md space-y-6">
       <h1 className="text-2xl font-bold text-gray-800">{t('createPost')}</h1>
       {error && <p className="text-red-500 text-center">{error}</p>}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-4">
         <input
           type="text" 
           placeholder={t('title')}
@@ -174,13 +155,11 @@ const CreatePost = () => {
           onChange={(e) => setDescription(e.target.value)} 
           className="input-field"
         />
-        <input 
-          type="file" 
-          onChange={(e) => { if (e.target.files) uploadImage(e.target.files[0]) }} 
-          className=" file:bg-purple-500 file:text-white file:px-4 file:py-2 file:rounded-md file:hover:bg-purple-600 file:cursor-pointer file:mr-4"
-        />
-
-        {imageUrl && <img src={`${apiUrl}${imageUrl}`} alt="Collection icon" className="rounded w-full max-h-32 object-cover" />}
+        
+        <ImageChoose onUpload={(path) => {
+          console.log("norm")
+          setImageUrl(path)
+        }}/>
         
         <h2 className="text-lg font-semibold">{t('tags')}</h2>
         <div className="flex flex-wrap gap-2">
@@ -257,10 +236,11 @@ const CreatePost = () => {
           onClick={handleAddCard}
         >{t('addCard')}</button>
         <button 
-          type="submit" 
+          type="button" 
           className="primary-button"
+          onClick={handleSubmit}
         >{t('createPost')}</button>
-      </form>
+      </div>
     </div>
   );
 };

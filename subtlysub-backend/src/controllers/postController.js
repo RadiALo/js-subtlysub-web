@@ -98,12 +98,13 @@ export const getPendingPosts = async (req, res) => {
     }
 
     const posts = await prisma.post.findMany({
-      where: { pending },
+      where: { pending: true },
       include: {tags: true, author: true }
     });
     res.json(posts);
   } catch (error) {
     res.status(500).json({ message: "Error fetching posts", error });
+    console.error(error);
   }
 }
 
@@ -136,9 +137,9 @@ export const getPostById = async (req, res) => {
 export const updatePost = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, tags, cards } = req.body;
+    const { title, description, tags, cards, imageUrl } = req.body;
     const { user } = req;
-
+    console.log(imageUrl)
     const existingPost = await prisma.post.findUnique({
       where: { id },
       include: { tags: true, cards: true },
@@ -155,7 +156,6 @@ export const updatePost = async (req, res) => {
     const syncedTags = await syncTags(tags);
     const pending = (user.role !== "admin" && user.role !== "moderator");
 
-    const currentCards = existingPost.cards.map(card => card.id);
     const newCards = cards.map(card => ({ word: card.word, translation: card.translation }));
     const cardsToDelete = existingPost.cards.filter(card => !cards.some(newCard => newCard.word === card.word)).map(card => card.id);
     const cardsToCreate = newCards.filter(newCard => !existingPost.cards.some(card => card.word === newCard.word));
@@ -166,6 +166,7 @@ export const updatePost = async (req, res) => {
         title,
         description,
         pending,
+        imageUrl,
         tags: {
           set: syncedTags.map((tag) => ({ id: tag.id }))
         },
