@@ -12,6 +12,7 @@ model User {
   username      String        @unique
   email         String        @unique
   password      String
+  verified      Boolean       @default(false)
   roleId        Int           @default(1)
   role          Role          @relation(fields: [roleId], references: [id])
   posts         Post[]

@@ -65,5 +65,9 @@
   "youHaveLearnedNewWords1": "Ви вивчили",
   "youHaveLearnedNewWords2": "нових слів!",
   "continue": "Продовжити",
-  "goBack": "Назад"
+  "goBack": "Назад",
+  "verifyLabel": "Підтвердьте електронну пошту",
+  "code": "Введіть код з повідомлення",
+  "resend": "Відправити ще раз",
+  "submit": "Відправити"
 }
