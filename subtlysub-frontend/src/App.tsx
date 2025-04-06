@@ -16,7 +16,6 @@ import Learn from "./pages/Learn/Learn";
 import LearnApp from "./pages/Learn/LearnApp";
 import './i18n';
 import ProtectedRoute from "./pages/ProtectedRoute";
-import Code from "./Code";
 
 function App() {
   return (
@@ -24,7 +23,6 @@ function App() {
       <Header></Header>      
       <div className="py-6 min-h-screen bg-gray-800">
         <Routes>
-          <Route path="/code" element={<Code />}/>
           <Route path="/login" element={<LogIn />}/>
           <Route path="/signup" element={<SignUp />}/>
           <Route path="/verify" element={<Verify />}/>

@@ -347,3 +347,94 @@ export const deleteCollection = async (req, res) => {
     res.status(500).json({ message: "Error deleting collection", error });
   }
 };
+
+export const pinCollectionToPost = async (req, res) => {
+  const { postId, collectionId } = req.body;
+  const { user } = req;
+
+  if (!user) {
+    return res.status(403).json({ message: "Unauthorized" });
+  }
+
+  if (!postId || !collectionId) {
+    return res.status(400).json({ message: "Post ID and Collection ID are required" });
+  }
+
+  const collection = await prisma.collection.findUnique({
+    where: { id: collectionId },
+    include: { owner: true }
+  });
+
+  if (!collection) {
+    return res.status(404).json({ message: "Collection not found" });
+  }
+
+  if (collection.ownerId !== user.id) {
+    return res.status(403).json({ message: "Unauthorized" });
+  }
+
+  const post = await prisma.post.findUnique({
+    where: { id: postId },
+    include: { collections: true, author: true }
+  });
+  
+  if (!post) {
+    return res.status(404).json({ message: "Post not found" });
+  }
+
+  if (post.authorId !== user.id) {
+    return res.status(403).json({ message: "Unauthorized" });
+  }
+
+  if (post.linkedCollId === collectionId) {
+    return res.status(400).json({ message: "Post is already pinned to this collection" });
+  }
+
+  await prisma.post.update({
+    where: { id: postId },
+    data: {
+      linkedCollId: collectionId,
+    },
+  });
+
+  return res.status(200).json({ message: "Post pinned to collection successfully" });
+};
+
+export const unpinCollectionFromPost = async (req, res) => {
+  const { postId } = req.body;
+  const { user } = req;
+
+  if (!user) {
+    return res.status(403).json({ message: "Unauthorized" });
+  }
+
+  if (!postId) {
+    return res.status(400).json({ message: "Post ID is required" });
+  }
+
+  const post = await prisma.post.findUnique({
+    where: { id: postId },
+    include: { collections: true, author: true }
+  });
+
+  if (!post) {
+    return res.status(404).json({ message: "Post not found" });
+  }
+
+  if (post.authorId !== user.id) {
+    return res.status(403).json({ message: "Unauthorized" });
+  }
+
+  if (!post.linkedCollId) {
+    return res.status(400).json({ message: "Post is not pinned to any collection" });
+  }
+
+  await prisma.post.update({
+    where: { id: postId },
+    data: {
+      linkedCollId: null,
+    },
+  });
+
+  return res.status(200).json({ message: "Post unpinned from collection successfully" });
+}

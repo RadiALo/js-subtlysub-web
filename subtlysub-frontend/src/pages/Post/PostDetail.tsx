@@ -3,7 +3,7 @@ import { Post } from "../../types/Post";
 import { useEffect, useState } from "react";
 import CardItem from "../../components/CardItem";
 import { Collection } from "../../types/Collection";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 const PostDetail = () => {
   const { t } = useTranslation();
@@ -19,8 +19,12 @@ const PostDetail = () => {
   const [collectionsInfo, setCollectionsInfo] = useState<Map<string, boolean>>(
     new Map()
   );
+
+  const [pinToCollection, setPinToCollection] = useState<Collection | null>(post ? post.linkedColl : null);
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isAddToModalOpen, setIsAddToModalOpen] = useState(false);
+  const [isPinToModalOpen, setIsPinToModalOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -165,6 +169,94 @@ const PostDetail = () => {
     setIsAddToModalOpen(false);
   };
 
+  const handlePinTo = async () => {
+    setIsPinToModalOpen(false);
+
+    if (!token) {
+      return;
+    }
+
+    if (pinToCollection) {
+      const response = await fetch(
+        `${apiUrl}/api/collections/pin`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            postId: post?.id,
+            collectionId: pinToCollection?.id,
+          }),
+        }
+      );
+
+      console.log(response);
+    } else {
+      const response = await fetch(
+        `${apiUrl}/api/collections/unpin`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            postId: post?.id,
+          }),
+        }
+      );
+    }
+
+    const postResponse = await fetch(`${apiUrl}/api/posts/${id}`);
+
+      if (!postResponse.ok) {
+        console.error("Failed to fetch post");
+        return;
+      }
+
+      const favoriteCollectionResponse = await fetch(
+        `${apiUrl}/api/collections/favorite`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!favoriteCollectionResponse.ok) {
+        console.error("Failed to fetch favorite collection");
+        return;
+      }
+
+      const newPost = await postResponse.json();
+      const favoriteCollection = await favoriteCollectionResponse.json();
+      if (favoriteCollection.posts.some((p: Post) => p.id === newPost.id)) {
+        newPost.favorite = true;
+      }
+
+      setPost(newPost);
+
+      console.log(response);
+  };
+
+  const handlePinToSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedCollectionId = e.target.value;
+
+    if (selectedCollectionId === "null") {
+      setPinToCollection(null);
+      return;
+    }
+
+    const selectedCollection = collections.find(
+      (collection) => collection.id === selectedCollectionId
+    );
+
+    setPinToCollection(selectedCollection || null);
+  };
+
   const toggleFavorite = async () => {
     if (!token) {
       return;
@@ -203,19 +295,19 @@ const PostDetail = () => {
 
           {post?.pending && (
             <div className="absolute top-2 right-2 bg-purple-500 text-white text-sm font-bold px-3 py-1 rounded-md">
-              {t('pending')}
+              {t("pending")}
             </div>
           )}
         </div>
 
         <div className="px-6 pb-4">
-          <div className="p-6 flex justify-between items-start">
+          <div className="p-6 flex justify-between items-start gap-6">
             <div className="w-xl">
               <h1 className="text-2xl font-bold text-gray-800">
                 {post?.title}
               </h1>
               <p className="text-gray-500 text-sm">
-                {t('by')} {post?.author.username}
+                {t("by")} {post?.author.username}
               </p>
 
               <div className="mb-4 tag-container">
@@ -229,12 +321,24 @@ const PostDetail = () => {
               <div className="mt-4 mb-4">{post?.description}</div>
 
               <div className="flex justify-end items-center gap-4 mt-4">
+                {(user.role === "admin" ||
+                  user.role === "moderator" ||
+                  user.id === post?.author.id) && (
+                  <button
+                    className="px-4 py-2 inline-block font-semibold text-white bg-purple-500 rounded-lg
+                              hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    onClick={() => setIsPinToModalOpen(true)}
+                  >
+                    {t("pinTo")}
+                  </button>
+                )}
+
                 <button
                   className="px-4 py-2 inline-block font-semibold text-white bg-purple-500 rounded-lg
                               hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-400"
                   onClick={() => setIsAddToModalOpen(true)}
                 >
-                  {t('addTo')}
+                  {t("addTo")}
                 </button>
 
                 <button
@@ -256,7 +360,7 @@ const PostDetail = () => {
                 onClick={() => navigate(`/collections/${post.linkedColl.id}`)}
               >
                 <span className="text-sm font-semibold tracking-wide">
-                  {t('discoverMore')}
+                  {t("discoverMore")}
                 </span>
 
                 <img
@@ -276,8 +380,9 @@ const PostDetail = () => {
                 <Link
                   to="./learn"
                   className="w-full text-center px-3 py-2 font-semibold inline-block text-white
-                bg-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400">
-                  {t('startLearning')}
+                bg-orange-500 rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                >
+                  {t("startLearning")}
                 </Link>
               </div>
 
@@ -293,7 +398,7 @@ const PostDetail = () => {
                         className="red-button cursor-pointer"
                         onClick={() => setIsDeleteModalOpen(true)}
                       >
-                        {t('delete')}
+                        {t("delete")}
                       </button>
                     </div>
                   )}
@@ -303,7 +408,7 @@ const PostDetail = () => {
                     user.id === post?.author.id) && (
                     <div>
                       <Link to="./edit" className="primary-button">
-                        {t('edit')}
+                        {t("edit")}
                       </Link>
                     </div>
                   )}
@@ -315,7 +420,7 @@ const PostDetail = () => {
                           className="primary-button"
                           onClick={handleApprove}
                         >
-                          {t('approve')}
+                          {t("approve")}
                         </button>
                       </div>
                     )}
@@ -327,7 +432,7 @@ const PostDetail = () => {
           {post?.cards && post.cards.length > 0 ? (
             <div className="p-6">
               <h1 className="text-2xl font-bold text-gray-800">
-                {t('vocabularyPreview')}
+                {t("vocabularyPreview")}
               </h1>
               <ul className="mt-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
                 {post.cards.slice(0, 10).map((card) => (
@@ -338,7 +443,7 @@ const PostDetail = () => {
               </ul>
             </div>
           ) : (
-            <p className="mt-4 text-gray-500">{t('noWordsAvailable')}</p>
+            <p className="mt-4 text-gray-500">{t("noWordsAvailable")}</p>
           )}
         </div>
       </div>
@@ -346,23 +451,19 @@ const PostDetail = () => {
       {isDeleteModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-            <h2 className="text-lg font-bold">
-              {t('deleteTitle')}
-            </h2>
-            <span className="text-gray-600 block mb-4">
-              {t('deleteSub')}
-            </span>
+            <h2 className="text-lg font-bold">{t("deleteTitle")}</h2>
+            <span className="text-gray-600 block mb-4">{t("deleteSub")}</span>
 
             <div className="flex justify-center gap-4">
               <button className="red-button" onClick={handleDelete}>
-                {t('yes')}
+                {t("yes")}
               </button>
 
               <button
                 className="green-button"
                 onClick={() => setIsDeleteModalOpen(false)}
               >
-                {t('no')}
+                {t("no")}
               </button>
             </div>
           </div>
@@ -372,48 +473,92 @@ const PostDetail = () => {
       {isAddToModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-            <h2 className="text-lg font-bold mb-6">
-              {t('chooseCollection')}
-            </h2>
-            {collections.map((collection) => (
-              <div key={collection.id} className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id={collection.id}
-                  checked={collectionsInfo.get(collection.id)}
-                  onChange={() => {
-                    const newCollectionsInfo = new Map(collectionsInfo);
-                    newCollectionsInfo.set(
-                      collection.id,
-                      !collectionsInfo.get(collection.id)
-                    );
-                    setCollectionsInfo(newCollectionsInfo);
-                  }}
-                  className="h-5 w-5 accent-purple-500 focus:ring-purple-400"
-                />
-                <label
-                  htmlFor={collection.id}
-                  className="text-lg font-medium text-gray-700"
+            <h2 className="text-lg font-bold mb-6">{t("chooseCollection")}</h2>
+            {collections
+              .filter((col) => col.name !== "Favorites")
+              .map((collection) => (
+                <div
+                  key={collection.id}
+                  className="flex items-center space-x-2"
                 >
-                  {collection.name}
-                </label>
-              </div>
-            ))}
+                  <input
+                    type="checkbox"
+                    id={collection.id}
+                    checked={collectionsInfo.get(collection.id)}
+                    onChange={() => {
+                      const newCollectionsInfo = new Map(collectionsInfo);
+                      newCollectionsInfo.set(
+                        collection.id,
+                        !collectionsInfo.get(collection.id)
+                      );
+                      setCollectionsInfo(newCollectionsInfo);
+                    }}
+                    className="h-5 w-5 accent-purple-500 focus:ring-purple-400"
+                  />
+                  <label
+                    htmlFor={collection.id}
+                    className="text-lg font-medium text-gray-700"
+                  >
+                    {collection.name}
+                  </label>
+                </div>
+              ))}
 
             <div className="flex justify-center gap-4 mt-6">
               <button className="green-button" onClick={handleAddTo}>
-                {t('save')}
+                {t("save")}
               </button>
 
               <button
                 className="red-button"
                 onClick={() => setIsAddToModalOpen(false)}
               >
-                {t('cancel')}
+                {t("cancel")}
               </button>
             </div>
           </div>
         </div>
+      )}
+
+      {isPinToModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+          <h2 className="text-lg font-bold mb-6">{t("chooseCollectionToPin")}</h2>
+
+          <div className="space-y-4">
+            <select
+              onChange={handlePinToSelect}
+              className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              defaultValue={post?.linkedColl ? post.linkedColl.id : "null"}
+            >
+              <option value="null">
+                {t("withoutPinnedCollection")}
+              </option>
+
+              {collections
+                .filter((col) => col.name !== "Favorites")
+                .map((collection) => (
+                  <option key={collection.id} value={collection.id}>
+                    {collection.name}
+                  </option>
+                ))}
+            </select>
+          </div>
+
+          <div className="flex justify-center gap-4 mt-6">
+            <button className="green-button" onClick={handlePinTo}>
+              {t("save")}
+            </button>
+
+            <button
+              className="red-button"
+              onClick={() => setIsPinToModalOpen(false)}
+            >
+              {t("cancel")}
+            </button>
+          </div>
+        </div>
+      </div>
       )}
     </>
   );

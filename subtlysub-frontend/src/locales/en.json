@@ -69,5 +69,6 @@
   "verifyLabel": "Verify your email",
   "code": "Enter the code from the email",
   "resend": "Resend code",
-  "submit": "Submit"
+  "submit": "Submit",
+  "pinTo": "Pin to"
 }
