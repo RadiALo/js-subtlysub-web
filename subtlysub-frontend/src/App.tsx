@@ -16,71 +16,70 @@ import Learn from "./pages/Learn/Learn";
 import LearnApp from "./pages/Learn/LearnApp";
 import './i18n';
 import ProtectedRoute from "./pages/ProtectedRoute";
+import Code from "./Code";
 
 function App() {
-  const storedUser = localStorage.getItem("user");
-  const user = storedUser ? JSON.parse(storedUser) : null;
-
   return (
     <Router>
       <Header></Header>      
       <div className="py-6 min-h-screen bg-gray-800">
         <Routes>
+          <Route path="/code" element={<Code />}/>
           <Route path="/login" element={<LogIn />}/>
           <Route path="/signup" element={<SignUp />}/>
           <Route path="/verify" element={<Verify />}/>
           <Route path="/explore" element={
-            <ProtectedRoute user={user}>
+            <ProtectedRoute>
               <Explore />
             </ProtectedRoute>
           }/>
           <Route path="/home" element={
-            <ProtectedRoute user={user}>
+            <ProtectedRoute>
               <Home />
             </ProtectedRoute>
           }/>
           <Route path="/" element={
-            <ProtectedRoute user={user}>
+            <ProtectedRoute>
               <Home />
             </ProtectedRoute>
           }/>
           <Route path="/posts/create" element={
-            <ProtectedRoute user={user}>
+            <ProtectedRoute>
               <CreatePost />
             </ProtectedRoute>
           }/>
           <Route path="/posts/:id/edit" element={
-            <ProtectedRoute user={user}>
+            <ProtectedRoute>
               <EditPost />
             </ProtectedRoute>
           }/>
           <Route path="/posts/:id" element={
-            <ProtectedRoute user={user}>
+            <ProtectedRoute>
               <PostDetail />
             </ProtectedRoute>
           }/>
           <Route path="/collections/create" element={
-            <ProtectedRoute user={user}>
+            <ProtectedRoute>
               <CreateCollection />
             </ProtectedRoute>
           }/>
           <Route path="/collections/:id/edit" element={
-            <ProtectedRoute user={user}>
+            <ProtectedRoute>
               <EditCollection />
             </ProtectedRoute>
           }/>
           <Route path="/collections/:id" element={
-            <ProtectedRoute user={user}>
+            <ProtectedRoute>
               <CollectionDetail />
             </ProtectedRoute>
           }/>
           <Route path="/posts/:id/learn/app" element={
-            <ProtectedRoute user={user}>
+            <ProtectedRoute>
               <LearnApp />
             </ProtectedRoute>
           } />
           <Route path="/posts/:id/learn" element={
-            <ProtectedRoute user={user}>
+            <ProtectedRoute>
               <Learn />
             </ProtectedRoute>
           } />

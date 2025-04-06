@@ -1,9 +1,12 @@
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from "react";
+import { redirect } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Verify = () => {
   const { t } = useTranslation();
   const apiUrl = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
 
   const [resendActive, setResendActive] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
@@ -13,12 +16,65 @@ const Verify = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
+
+    try {
+      const response = await fetch(`${apiUrl}/api/users/verify`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        },
+        body: JSON.stringify({ code }),
+      });
+
+      if (!response.ok) {
+        setErrorMsg(t('verificationError'));
+        return;
+      }
+
+      const data = await response.json();
+      localStorage.setItem("token", data.token);
+
+      const decodeToken = (token: string) => {
+        try {
+          const base64Url = token.split(".")[1];
+          const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+          return JSON.parse(atob(base64));
+        } catch {
+          return null;
+        }
+      };
+      const decoded = decodeToken(data.token);
+      
+      if (decoded) {
+        localStorage.setItem("user", JSON.stringify(decoded));
+      } else {
+        console.error("Invalid token");
+      }
+      
+      navigate("/home");
+    } catch (error) {
+      console.error("Error fetching verification code:", error);
+      setErrorMsg(t('verificationError'));
+    }
   };
 
   const handleResend = async () => {
     setErrorMsg("");
     setResendActive(false);
     setCountdown(30);
+
+    try {
+      await fetch(`${apiUrl}/api/users/verify`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching verification code:", error);
+      setErrorMsg(t('verificationError'));
+    }
   };
 
   useEffect(() => {
@@ -33,6 +89,24 @@ const Verify = () => {
 
     return () => clearTimeout(timer);
   }, [countdown]);
+
+  useEffect(() => {
+    const getVerificationCode = async () => {
+      try {
+        await fetch(`${apiUrl}/api/users/verify`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          },
+        });
+      } catch (error) {
+        console.error("Error fetching verification code:", error);
+        setErrorMsg(t('verificationError'));
+      }
+    };
+
+    getVerificationCode();
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center">

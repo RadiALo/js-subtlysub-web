@@ -1,10 +1,12 @@
 import { PrismaClient } from "@prisma/client";
+import jwt from "jsonwebtoken";
+import sendEmail from '../smtp.js';
 
 const prisma = new PrismaClient();
 
 export const verificationCodes = new Map();
 export const resendTimers = new Map();
-export const resendCooldown = 30;
+export const resendCooldown = 600;
 export const verificationCodeExpiration = 3600;
 
 export const getUsers = async (req, res) => {
@@ -41,7 +43,7 @@ export const getUserById = async (req, res) => {
 
 export const getVerifyCode = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.user;
 
     const user = await prisma.user.findUnique({
       where: {
@@ -66,7 +68,7 @@ export const getVerifyCode = async (req, res) => {
 
     const randomCode = Math.floor(100000 + Math.random() * 900000);
     console.log(`Verification code for user ${id}: ${randomCode}`);
-
+    sendEmail(randomCode, user.email, user.username);
     verificationCodes.set(id, {
       code: randomCode,
       expiresAt: now + 3600 * 1000,
@@ -83,8 +85,10 @@ export const getVerifyCode = async (req, res) => {
 
 export const verifyCode = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.user;
     const { code } = req.body;
+
+    console.log(`Verifying code for user ${id}: ${code}`);
 
     const user = await prisma.user.findUnique({
       where: { id },
@@ -120,7 +124,7 @@ export const verifyCode = async (req, res) => {
     resendTimers.delete(id);
 
     const token = jwt.sign(
-      { id: user.id, username: user.username, role: user.role.name, verified: true },
+      { id: user.id, username: user.username, role: "user", verified: true },
       process.env.JWT_SECRET,
       { expiresIn: "3d" }
     );
