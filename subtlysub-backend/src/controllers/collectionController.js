@@ -11,6 +11,10 @@ export const createCollection = async (req, res) => {
       return res.status(400).json({ message: "Name and description is required" });
     }
 
+    if (name == "Favorites") {
+      return res.status(400).json({ message: "Collection name cannot be 'Favorites'" });
+    }
+
     if (!imageUrl) {
       return res.status(400).json({ message: "Image URL is required" });
     }
@@ -322,6 +326,10 @@ export const deleteCollection = async (req, res) => {
 
     if (!collection) {
       return res.status(404).json({ message: "Collection not found" });
+    }
+
+    if (collection.name == "Favorites") {
+      return res.status(400).json({ message: "Cannot delete Favorites collection" });
     }
 
     if (collection.ownerId !== user.id && role !== "admin" && role !== "moderator") {

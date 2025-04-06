@@ -45,7 +45,7 @@ const sendEmail = async (code, email, username) => {
         Name: username
       }
     ],
-    Subject: "Welcome at SubtlySub!",
+    Subject: "Welcome to SubtlySub!",
     "Text-part": `Your verification code is ${code}`,
     "Html-part": htmlTemplate.replace("{{CODE}}", code)
   };
