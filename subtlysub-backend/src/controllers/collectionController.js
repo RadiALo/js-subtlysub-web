@@ -110,12 +110,20 @@ export const updateCollectionById = async (req, res) => {
       return res.status(400).json({ message: "Name is required" });
     }
 
+    if (name == "Favorites") {
+      return res.status(400).json({ message: "Collection name cannot be 'Favorites'" });
+    }
+
     const collection = await prisma.collection.findUnique({
       where: { id },
     });
     
     if (!collection) {
       return res.status(404).json({ message: "Collection not found" });
+    }
+
+    if (collection.name == "Favorites") {
+      return res.status(400).json({ message: "Cannot update Favorites collection" });
     }
     
     if (collection.ownerId !== user.id) {
