@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import validator from "validator";
 
 const prisma = new PrismaClient();
 
@@ -42,6 +43,22 @@ export const login = async (req, res) => {
 export const register = async (req, res) => {
   try {
     const { email, username, password } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    if (!username) {
+      return res.status(400).json({ message: "Username is required" });
+    }
+    
+    if (!password) {
+      return res.status(400).json({ message: "Password is required" });
+    }
+
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
 
     const alreadyExist = await prisma.user.findFirst({
       where: {

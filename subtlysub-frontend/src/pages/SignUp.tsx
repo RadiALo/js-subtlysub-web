@@ -41,28 +41,26 @@ const SignUp = () => {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md p-8 space-y-6 bg-gray-200 shadow-lg rounded-2xl">
-        <h2 className="text-2xl font-bold text-center text-gray-800">Sign Up</h2>
+        <h2 className="text-2xl font-bold text-center text-gray-800">{t('signup')}</h2>
         {errorMsg && <p className="text-red-500 text-center">{errorMsg}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
                 <label className="block text-gray-700">{t('email')}</label>
                 <input 
-                  type="email"
+                  type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  required
                   className="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-purple-200 focus:border-purple-400"
                 />
           </div>
 
           <div>
-                <label className="block text-gray-700">{t('login')}</label>
+                <label className="block text-gray-700">{t('username')}</label>
                 <input 
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  required
                   className="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-purple-200 focus:border-purple-500"
                 />
           </div>
@@ -73,7 +71,6 @@ const SignUp = () => {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  required 
                   className="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-purple-200 focus:border-purple-500"
                 />
           </div>
