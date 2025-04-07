@@ -18,12 +18,18 @@ const Header = () => {
 
   const toggleLanguage = () => {
     i18next.changeLanguage(isEnglish ? 'ua' : 'en');
+    localStorage.setItem('language', isEnglish ? 'ua' : 'en');
     setIsEnglish(!isEnglish);
   };
 
   useEffect(() => {
     setIsEnglish(i18next.language === 'en');
   }, [t]);
+
+  useEffect(() => {    
+    const savedLanguage = localStorage.getItem('language');
+    i18next.changeLanguage(savedLanguage || 'en');
+  }, []);
 
   return (
     <header className="bg-gray-900 text-white py-4 shadow-md">

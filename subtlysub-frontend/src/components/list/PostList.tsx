@@ -64,7 +64,7 @@ const PostList = ({ link, title, authorization = false, createLink = false, para
     <div>
       <h1 className="text-3xl font-bold text-white mb-6">{title}</h1>
 
-      {posts && posts.length > 0 ? (
+      {(posts && posts.length > 0) || createLink ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {posts.slice(0, visibleCount).map((post: Post) => (
             <PostItem key={post.id} post={post} />
@@ -83,7 +83,7 @@ const PostList = ({ link, title, authorization = false, createLink = false, para
           )}
         </div>
       ) : (
-        <p className="text-white">{t("noPostsFounded")}</p>
+        <p className="text-white">{t("noPostsFound")}</p>
       )}
 
       {visibleCount < posts.length && (

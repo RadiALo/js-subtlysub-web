@@ -64,7 +64,7 @@ const CollectionList = ({ link, title, authorization = false, createLink = false
     <div>
       <h1 className="text-3xl font-bold text-white mb-6">{title}</h1>
 
-      {collections && collections.length > 0 ? (
+      {(collections && collections.length > 0) || createLink  ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {collections.slice(0, visibleCount).map((collection: Collection) => (
             <CollectionItem key={collection.id} collection={collection} />
@@ -83,7 +83,7 @@ const CollectionList = ({ link, title, authorization = false, createLink = false
           )}
         </div>
       ) : (
-        <p className="text-white">{t('noCollections')}</p>
+        <p className="text-white">{t('noCollectionsFound')}</p>
       )}
     </div>
   );

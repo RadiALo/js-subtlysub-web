@@ -16,11 +16,8 @@
   "createNewPost": "Create New Post",
   "createNewCollection": "Create New Collection",
   "trendingPosts": "Trending Posts",
-  "noTrendingPosts": "No trending posts found",
   "newestPosts": "Newest Posts",
-  "noNewestPosts": "No newest posts found",
   "pendingPosts": "Pending Posts",
-  "noPendingPosts": "No pending posts found",
   "loadMore": "Load More",
   "post": "post",
   "posts": "posts",
@@ -70,5 +67,8 @@
   "code": "Enter the code from the email",
   "resend": "Resend code",
   "submit": "Submit",
-  "pinTo": "Pin to"
+  "pinTo": "Pin to",
+  "search": "Search",
+  "noPostsFound": "No posts found",
+  "noCollectionsFound": "No collections found"
 }

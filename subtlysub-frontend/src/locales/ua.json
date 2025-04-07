@@ -16,11 +16,8 @@
   "createNewPost": "Створити новий пост",
   "createNewCollection": "Створити нову колекцію",
   "trendingPosts": "Трендові публікації",
-  "noTrendingPosts": "Трендові публікації не знайдено",
   "newestPosts": "Нові публікації",
-  "noNewestPosts": "Не знайдено нових публікацій",
   "pendingPosts": "Очікуючі публікації",
-  "noPendingPosts": "Очікуючі публікації не знайдено",
   "loadMore": "Завантажити ще",
   "post": "пост",
   "posts": "постів",
@@ -72,5 +69,8 @@
   "resend": "Відправити ще раз",
   "submit": "Відправити",
   "pinTo": "Закріпити",  
-  "withoutPinnedCollection": "Без колекції"
+  "withoutPinnedCollection": "Без колекції",
+  "search": "Пошук",
+  "noPostsFound": "Постів не знайдено",
+  "noCollectionsFound": "Колекцій не знайдено"
 }

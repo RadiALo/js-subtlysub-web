@@ -70,6 +70,7 @@ export const register = async (req, res) => {
     const favoriteCollection = await prisma.collection.create({
       data: {
         name: "Favorites",
+        description: "Your favorite posts",
         imageUrl: "/uploads/favorites.png",
         owner: {
           connect: {
