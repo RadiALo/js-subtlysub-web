@@ -305,3 +305,30 @@ export const getTrendingPosts = async (req, res) => {
     console.error(error);
   }
 }
+
+export const searchPosts = async (req, res) => {
+  const query = req.query.q;
+
+  if (!query) {
+    return res.status(400).json({ message: "Query is required" });
+  }
+
+  try {
+    const posts = await prisma.post.findMany({
+      where: {
+        title: {
+          contains: query,
+          mode: "insensitive",
+        },
+        pending: false,
+      },
+      include: {tags: true, author: true },
+      take: 10
+    });
+
+    res.status(200).json(posts);
+  } catch (error) {
+    console.error("Error searching posts:", error);
+    return res.status(500).json({ message: "Error searching posts", error });
+  }
+}

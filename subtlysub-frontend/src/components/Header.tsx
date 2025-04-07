@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from "react";
 import i18next from "i18next";
+import SearchBar from "./SearchBar";
 
 const Header = () => {
   const { t } = useTranslation();
@@ -31,7 +32,8 @@ const Header = () => {
           SubtlySub
         </Link>
 
-        {/* Кнопка для мобільного меню */}
+        {token && <SearchBar />}
+
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className="lg:hidden text-white focus:outline-none"
@@ -39,7 +41,6 @@ const Header = () => {
           {isMobileMenuOpen ? "✖" : "☰"}
         </button>
 
-        {/* Навігація для великих екранів */}
         <nav className="hidden lg:block">
           <ul className="flex space-x-6">
             {token ? (
@@ -71,7 +72,6 @@ const Header = () => {
         </nav>
       </div>
 
-      {/* Мобільне меню */}
       {isMobileMenuOpen && (
         <div className="lg:hidden bg-gray-800 py-4 px-6">
           <ul className="space-y-4 text-center">

@@ -50,7 +50,6 @@ const CollectionList = ({ link, title, authorization = false, createLink = false
         }
 
         const data = await response.json();
-        console.log(data);
         setCollections(data);
       }
       catch (error) {

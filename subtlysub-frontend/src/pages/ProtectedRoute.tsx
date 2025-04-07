@@ -8,7 +8,6 @@ function ProtectedRoute({ children }) {
     return <Navigate to="/login" replace />;
   }
 
-  console.log("User:", user);
   if (!user.verified) {
     return <Navigate to="/verify" replace />;
   }

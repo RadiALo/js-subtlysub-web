@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ImageChoose from "../../components/ImageChoose";
 
 const CreateCollection = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
+  const token = localStorage.getItem("token");
 
   const navigate = useNavigate();
 
@@ -11,27 +13,7 @@ const CreateCollection = () => {
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState("");
 
-  const uploadImage = async (file: File) => {
-    try {
-      const formData = new FormData();
-      formData.append("image", file);
-
-      const response = await fetch(`${apiUrl}/upload`, {
-        method: "POST",
-        body: formData
-      });
-
-      const data = await response.json();
-      setImageUrl(data.filePath);
-      console.log("Uploaded file: ", data);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleCreate = async () => {
     if (!name || !description) {
       setError("Name and description is required");
       return;
@@ -42,22 +24,20 @@ const CreateCollection = () => {
       return;
     }
 
-    const token = localStorage.getItem("token");
-
     if (!token) {
       setError("User not authenticated");
       return;
     }
-    
+
     try {
-      const response = await fetch(`${apiUrl}/api/collections`, {      
+      const response = await fetch(`${apiUrl}/api/collections`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ name, description, imageUrl }
-      )});
+        body: JSON.stringify({ name, description, imageUrl }),
+      });
 
       if (!response.ok) {
         throw new Error("Failed to create post");
@@ -78,31 +58,34 @@ const CreateCollection = () => {
     <div className="max-w-2xl mx-auto mt-6 p-6 bg-white rounded-lg shadow-md space-y-6">
       <h1 className="text-2xl font-bold text-gray-800">Create Collection</h1>
       {error && <p className="text-red-500 text-center">{error}</p>}
-      
-      <form onSubmit={handleSubmit} className="space-y-4">
+
+      <div className="space-y-4">
         <input
-          type="text" 
-          placeholder="Name" 
-          value={name} 
-          onChange={(e) => setName(e.target.value)} 
+          type="text"
+          placeholder="Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
           className="input-field"
         />
 
-        <textarea 
-          placeholder="Description" 
-          value={description} 
-          onChange={(e) => setDescription(e.target.value)} 
+        <textarea
+          placeholder="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
           className="input-field"
         />
 
-        <input type="file" onChange={(e) => { if (e.target.files) uploadImage(e.target.files[0]) }} />
-        {imageUrl && <img src={`${apiUrl}${imageUrl}`} alt="Collection icon" className="rounded w-full max-h-32 object-cover" />}
+        <ImageChoose
+          onUpload={(path) => {
+            console.log("norm");
+            setImageUrl(path);
+          }}
+        />
 
-        <button 
-          type="submit" 
-          className="primary-button"
-        >Create Collection</button>
-      </form>
+        <button type="button" onClick={handleCreate} className="primary-button">
+          Create Collection
+        </button>
+      </div>
     </div>
   );
 };

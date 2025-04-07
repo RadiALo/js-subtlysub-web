@@ -10,7 +10,7 @@ const Explore = () => {
       <PostList link="/api/posts" title={t("newestPosts")} />
 
       {(user.role === "admin" || user.role == "moderator") && (
-        <PostList link="/api/posts/pending" title={t("pendingPosts")} />
+        <PostList link="/api/posts/pending" title={t("pendingPosts")} authorization={true} />
       )}
     </div>
   );
