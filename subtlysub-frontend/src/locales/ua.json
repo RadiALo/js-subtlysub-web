@@ -72,5 +72,6 @@
   "withoutPinnedCollection": "Без колекції",
   "search": "Пошук",
   "noPostsFound": "Постів не знайдено",
-  "noCollectionsFound": "Колекцій не знайдено"
+  "noCollectionsFound": "Колекцій не знайдено",
+  "noResults": "Немає результатів"
 }

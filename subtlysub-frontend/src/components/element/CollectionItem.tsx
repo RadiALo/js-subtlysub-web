@@ -22,7 +22,7 @@ const CollectionItem = ({ collection }: CollectionProps) => {
         <img 
           src={`${apiUrl}${collection.imageUrl}`}
           alt="Collection image" 
-          className="w-full max-h-32 object-cover"
+          className="w-full h-32 object-cover"
         />
       </div>
 

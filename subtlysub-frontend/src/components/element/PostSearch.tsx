@@ -12,11 +12,11 @@ const PostSearch = ({post, onClick}: PostSearchProps) => {
 
 
   const handleClick = () => {
-    navigate(`/posts/${post.id}`);
-
     if (onClick) {
       onClick();
     }
+
+    navigate(`/posts/${post.id}`);
   };
 
   return (

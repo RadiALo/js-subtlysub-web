@@ -35,7 +35,6 @@ const LearnApp = () => {
     
     if (currentCard >= session.length - 1) {
       setSessionFinished(true);
-      updateProgress();
     }
   };
 
@@ -47,7 +46,6 @@ const LearnApp = () => {
 
     if (currentCard >= session.length - 1) {
       setSessionFinished(true);
-      updateProgress();
     }
   };
 
@@ -57,6 +55,7 @@ const LearnApp = () => {
   }
 
   const handleRestartSession = async () => {
+    updateProgress();
     setSession((prevSession) => {
       const newSession = prevSession.filter((card) => !card.learned);
       return newSession;

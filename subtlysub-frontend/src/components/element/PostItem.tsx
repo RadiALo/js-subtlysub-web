@@ -33,7 +33,7 @@ const PostItem = ({ post }: PostProps) => {
         <img 
           src={imagePath()}
           alt="Post image" 
-          className="w-full max-h-32 object-cover"
+          className="w-full h-32 object-cover"
         />
       </div>
 
@@ -43,7 +43,7 @@ const PostItem = ({ post }: PostProps) => {
         <p className="text-gray-700 mt-2 h-14">{post.description.length < 60 ? post.description : `${post.description.slice(0, 60).trim()}...`}</p>
 
         <div className="tag-container">
-          {post.tags.map(tag => (
+          {post.tags.slice(0, 3).map(tag => (
             <span
               key={tag.id}
               className="tag"

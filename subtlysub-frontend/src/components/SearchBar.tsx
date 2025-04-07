@@ -67,7 +67,7 @@ export default function SearchBar() {
         onChange={(e) => setQuery(e.target.value)}
         className="w-full pl-10 pr-4 py-2 placeholder-gray-600 text-black bg-white max-w-md border rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
       />
-      {focused && query && query.trim() != "" &&
+      {(focused || (query && query.trim() != "")) &&
         (!loading ? (
           results && results.length > 0 ? (
             <div className="absolute z-10 mt-2 w-full bg-white border rounded-2xl shadow-lg max-h-60 overflow-y-auto">
@@ -76,7 +76,7 @@ export default function SearchBar() {
                     <PostSearch
                       post={post}
                       key={post.id}
-                      onClick={() => {setQuery("")}}
+                      onClick={() => {console.log("click"); setQuery("")}}
                     />
                   ))}
               </ul>

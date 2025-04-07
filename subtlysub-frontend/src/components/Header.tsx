@@ -33,7 +33,7 @@ const Header = () => {
 
   return (
     <header className="bg-gray-900 text-white py-4 shadow-md">
-      <div className="container mx-auto flex justify-between items-center px-6">
+      <div className="container mx-auto flex justify-between items-center px-6 gap-4">
         <Link to="/" className="text-center text-2xl font-bold tracking-wide hover:text-purple-400 transition-colors">
           SubtlySub
         </Link>

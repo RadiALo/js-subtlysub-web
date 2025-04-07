@@ -70,5 +70,6 @@
   "pinTo": "Pin to",
   "search": "Search",
   "noPostsFound": "No posts found",
-  "noCollectionsFound": "No collections found"
+  "noCollectionsFound": "No collections found",
+  "noResults": "No results"
 }
