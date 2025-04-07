@@ -1,7 +1,7 @@
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Post } from "../../types/Post";
 import { useEffect, useState } from "react";
-import CardItem from "../../components/CardItem";
+import CardItem from "../../components/element/CardItem";
 import { Collection } from "../../types/Collection";
 import { useTranslation } from "react-i18next";
 

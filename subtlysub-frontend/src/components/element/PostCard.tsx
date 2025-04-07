@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Post } from "../types/Post";
+import { Post } from "../../types/Post";
 
 interface PostCardProps {
   post: Post;

@@ -14,7 +14,7 @@ const CollectionItem = ({ collection }: CollectionProps) => {
   return (
     <div
       className="relative bg-white rounded-lg shadow-md transition-transform duration-300 ease-out
-                  hover:scale-105 hover:shadow-xl hover:bg-blue-50 cursor-pointer"
+                  hover:scale-105 hover:shadow-xl hover:bg-purple-50 cursor-pointer"
       onClick={() => navigate(`/collections/${collection.id}`)}
       role="button"
     >

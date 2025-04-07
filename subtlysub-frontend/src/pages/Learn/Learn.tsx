@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Post } from "../../types/Post";
-import CardItem from "../../components/CardItem";
+import CardItem from "../../components/element/CardItem";
 import { useTranslation } from 'react-i18next';
 
 type ProgressItem = {

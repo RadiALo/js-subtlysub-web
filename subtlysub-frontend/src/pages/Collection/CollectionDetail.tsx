@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import PostCard from "../../components/PostCard";
+import PostCard from "../../components/element/PostCard";
 import { Post } from "../../types/Post";
 import { Collection } from "../../types/Collection";
 
