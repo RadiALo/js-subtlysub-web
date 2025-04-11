@@ -77,7 +77,7 @@ const CollectionDetail = () => {
             </div>
             {(user.role === 'admin' || user.role === 'moderator' || user.id === collection?.owner.id) &&
                 <div className="flex gap-4 items-center flex-row-reverse">
-                  {(user.role === 'admin' || user.role === 'moderator' || user.id === collection?.owner.id) && <div>
+                  {(collection?.name !== "Favorites" && (user.role === 'admin' || user.role === 'moderator' || user.id === collection?.owner.id)) && <div>
                     <button
                       className="red-button"
                       onClick={() => setIsModalOpen(true)}
@@ -86,7 +86,8 @@ const CollectionDetail = () => {
                     </button>
                   </div>}
 
-                  {(user.role === 'admin' || user.role === 'moderator' || user.id === collection?.owner.id) && <div>
+                  {(collection?.name !== "Favorites" && (user.role === 'admin' || user.role === 'moderator'
+                      || user.id === collection?.owner.id)) && <div>
                     <Link
                       to="./edit"
                       className="primary-button"
