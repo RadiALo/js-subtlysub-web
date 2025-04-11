@@ -12,11 +12,13 @@ model User {
   username      String        @unique
   email         String        @unique
   password      String
+  verified      Boolean       @default(false)
   roleId        Int           @default(1)
   role          Role          @relation(fields: [roleId], references: [id])
   posts         Post[]
   collections   Collection[]
   createdAt     DateTime      @default(now())
+  learns Learn[]
 }
 
 model Role {
@@ -28,28 +30,35 @@ model Role {
 model Collection {
   id            String        @id @default(uuid())
   name          String
+  description   String        @default("")
+  imageUrl      String        @default("")
   ownerId       String
-  owner         User          @relation(fields: [ownerId], references: [id])
+  owner         User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   posts         Post[]
+  linkedPosts   Post[]        @relation(name: "Link")
 }
 
 model Post {
   id            String        @id @default(uuid())
   title         String
   description   String
+  imageUrl      String        @default("")
   tags          Tag[]
   collections   Collection[]
   authorId      String
-  author        User          @relation(fields: [authorId], references: [id])
+  author        User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  linkedCollId  String?
+  linkedColl    Collection?   @relation(name: "Link", fields: [linkedCollId], references: [id])
   cards         Card[]
   pending       Boolean       @default(true)
   createdAt     DateTime      @default(now())
+  learns Learn[]
 }
 
 model Card {
   id            Int           @id @default(autoincrement())
   postId        String
-  post          Post          @relation(fields: [postId], references: [id])
+  post          Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
   word          String
   translation   String
 }
@@ -58,4 +67,16 @@ model Tag {
   id            Int           @id @default(autoincrement())
   name          String        @unique
   posts         Post[]
+}
+
+model Learn {
+  userId String
+  postId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  progress Json?
+  createdAt  DateTime @default(now())
+  lastViewed DateTime @updatedAt
+
+  @@id([userId, postId])
 }

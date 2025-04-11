@@ -1,9 +1,11 @@
 import express from 'express';
-import { createUser, getUsers, getUserById } from '../controllers/userController.js';
+import { getUsers, getUserById, getVerifyCode, verifyCode } from '../controllers/userController.js';
+import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/', createUser);
+router.get("/verify", authMiddleware, getVerifyCode);
+router.post("/verify", authMiddleware, verifyCode);
 router.get('/', getUsers);
 router.get('/:id', getUserById);
 

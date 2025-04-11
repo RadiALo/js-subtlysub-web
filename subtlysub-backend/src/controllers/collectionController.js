@@ -5,15 +5,25 @@ const prisma = new PrismaClient();
 export const createCollection = async (req, res) => {
   try {
     const { user } = req;
-    const { name } = req.body;
+    const { name, description, imageUrl } = req.body;
 
-    if (!name) {
-      return res.status(400).json({ message: "Name is required" });
+    if (!name || !description) {
+      return res.status(400).json({ message: "Name and description is required" });
+    }
+
+    if (name == "Favorites") {
+      return res.status(400).json({ message: "Collection name cannot be 'Favorites'" });
+    }
+
+    if (!imageUrl) {
+      return res.status(400).json({ message: "Image URL is required" });
     }
 
     const collection = await prisma.collection.create({
       data: {
         name,
+        description,
+        imageUrl,
         ownerId: user.id,
       },
     });
@@ -31,10 +41,33 @@ export const getCollectionsByUser = async (req, res) => {
       where: {
         ownerId: user.id,
       },
+      include: {
+        posts: true,
+        owner: true
+      }
     });
     res.status(200).json(collections);
   } catch (error) {
     res.status(500).json({ message: "Error getting collections", error });
+  }
+};
+
+export const getFavoriteCollectionByUser = async (req, res) => {
+  try {
+    const { user } = req;
+    const favoriteCollection = await prisma.collection.findFirst({
+      where: {
+        ownerId: user.id,
+        name: "Favorites"
+      },
+      include: {
+        posts: true,
+        owner: true
+      }
+    });
+    res.status(200).json(favoriteCollection);
+  } catch (error) {
+    res.status(500).json({ message: "Error getting favorite collection", error });
   }
 };
 
@@ -44,8 +77,17 @@ export const getCollectionById = async (req, res) => {
 
     const collection = await prisma.collection.findUnique({
       where: {
-        id,
+        id
       },
+      include: {
+        posts: {
+          include: {
+            author: true,
+            tags: true
+          }
+        },
+        owner: true
+      }
     });
 
     if (!collection) {
@@ -58,14 +100,18 @@ export const getCollectionById = async (req, res) => {
   }
 };
 
-export const updateCollectionName = async (req, res) => {
+export const updateCollectionById = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name } = req.body;
+    const { name, description, imageUrl } = req.body;
     const { user } = req;
 
     if (!name) {
       return res.status(400).json({ message: "Name is required" });
+    }
+
+    if (name == "Favorites") {
+      return res.status(400).json({ message: "Collection name cannot be 'Favorites'" });
     }
 
     const collection = await prisma.collection.findUnique({
@@ -74,6 +120,10 @@ export const updateCollectionName = async (req, res) => {
     
     if (!collection) {
       return res.status(404).json({ message: "Collection not found" });
+    }
+
+    if (collection.name == "Favorites") {
+      return res.status(400).json({ message: "Cannot update Favorites collection" });
     }
     
     if (collection.ownerId !== user.id) {
@@ -86,6 +136,8 @@ export const updateCollectionName = async (req, res) => {
       },
       data: {
         name,
+        description,
+        imageUrl
       },
     });
 
@@ -136,7 +188,6 @@ export const addPostToCollection = async (req, res) => {
   }
 };
 
-
 export const removePostFromCollection = async (req, res) => {
   try {
     const { id } = req.params;
@@ -178,6 +229,98 @@ export const removePostFromCollection = async (req, res) => {
   }
 };
 
+export const addPostToFavorite = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { user } = req;
+
+    if (!user) {
+      return res.status(403).json({message: "Unauthorized"});
+    }
+
+    const favoriteCollection = await prisma.collection.findFirst({
+      where: { ownerId: user.id, name: "Favorites" },
+      include: { posts: true }
+    });
+
+    if (!favoriteCollection) {
+      return res.status(404).json({message: "Favorites collection not founded"})
+    }
+
+    const post = await prisma.post.findUnique({
+      where: {id}
+    });
+
+    if (!post) {
+      return res.status(404).json({message: "Post not founded"})
+    }
+
+    if (favoriteCollection.posts.some(p => p.id === id)) {
+      return res.status(400).json({ message: "Post is already in Favorites" });
+    }
+
+    await prisma.collection.update({
+      where: { id: favoriteCollection.id },
+      data: {
+        posts: {
+          connect: { id }
+        }
+      }
+    });
+
+    return res.json({ message: "Post added to Favorites successfully" });
+  } catch (error) {
+    console.error("Error adding post to favorites:", error);
+    return res.status(500).json({ message: "Internal Server Error", error });
+  }
+};
+
+export const removePostFromFavorite = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { user } = req;
+
+    if (!user) {
+      return res.status(403).json({message: "Unauthorized"});
+    }
+
+    const favoriteCollection = await prisma.collection.findFirst({
+      where: { ownerId: user.id, name: "Favorites" },
+      include: { posts: true }
+    });
+
+    if (!favoriteCollection) {
+      return res.status(404).json({message: "Favorites collection not founded"});
+    }
+
+    const post = await prisma.post.findUnique({
+      where: {id}
+    });
+
+    if (!post) {
+      return res.status(404).json({message: "Post not founded"});
+    }
+
+    if (!favoriteCollection.posts.some(p => p.id === id)) {
+      return res.status(400).json({ message: "Post is not in Favorites" });
+    }
+
+    await prisma.collection.update({
+      where: { id: favoriteCollection.id },
+      data: {
+        posts: {
+          disconnect: { id }
+        }
+      }
+    });
+
+    return res.json({ message: "Post removed from Favorites successfully" });
+  } catch (error) {
+    console.error("Error removing post to favorites:", error);
+    return res.status(500).json({ message: "Internal Server Error", error });
+  }
+};
+
 export const deleteCollection = async (req, res) => {
   try {
     const { id } = req.params;
@@ -191,6 +334,10 @@ export const deleteCollection = async (req, res) => {
 
     if (!collection) {
       return res.status(404).json({ message: "Collection not found" });
+    }
+
+    if (collection.name == "Favorites") {
+      return res.status(400).json({ message: "Cannot delete Favorites collection" });
     }
 
     if (collection.ownerId !== user.id && role !== "admin" && role !== "moderator") {
@@ -208,3 +355,94 @@ export const deleteCollection = async (req, res) => {
     res.status(500).json({ message: "Error deleting collection", error });
   }
 };
+
+export const pinCollectionToPost = async (req, res) => {
+  const { postId, collectionId } = req.body;
+  const { user } = req;
+
+  if (!user) {
+    return res.status(403).json({ message: "Unauthorized" });
+  }
+
+  if (!postId || !collectionId) {
+    return res.status(400).json({ message: "Post ID and Collection ID are required" });
+  }
+
+  const collection = await prisma.collection.findUnique({
+    where: { id: collectionId },
+    include: { owner: true }
+  });
+
+  if (!collection) {
+    return res.status(404).json({ message: "Collection not found" });
+  }
+
+  if (collection.ownerId !== user.id) {
+    return res.status(403).json({ message: "Unauthorized" });
+  }
+
+  const post = await prisma.post.findUnique({
+    where: { id: postId },
+    include: { collections: true, author: true }
+  });
+  
+  if (!post) {
+    return res.status(404).json({ message: "Post not found" });
+  }
+
+  if (post.authorId !== user.id) {
+    return res.status(403).json({ message: "Unauthorized" });
+  }
+
+  if (post.linkedCollId === collectionId) {
+    return res.status(400).json({ message: "Post is already pinned to this collection" });
+  }
+
+  await prisma.post.update({
+    where: { id: postId },
+    data: {
+      linkedCollId: collectionId,
+    },
+  });
+
+  return res.status(200).json({ message: "Post pinned to collection successfully" });
+};
+
+export const unpinCollectionFromPost = async (req, res) => {
+  const { postId } = req.body;
+  const { user } = req;
+
+  if (!user) {
+    return res.status(403).json({ message: "Unauthorized" });
+  }
+
+  if (!postId) {
+    return res.status(400).json({ message: "Post ID is required" });
+  }
+
+  const post = await prisma.post.findUnique({
+    where: { id: postId },
+    include: { collections: true, author: true }
+  });
+
+  if (!post) {
+    return res.status(404).json({ message: "Post not found" });
+  }
+
+  if (post.authorId !== user.id) {
+    return res.status(403).json({ message: "Unauthorized" });
+  }
+
+  if (!post.linkedCollId) {
+    return res.status(400).json({ message: "Post is not pinned to any collection" });
+  }
+
+  await prisma.post.update({
+    where: { id: postId },
+    data: {
+      linkedCollId: null,
+    },
+  });
+
+  return res.status(200).json({ message: "Post unpinned from collection successfully" });
+}

@@ -1,14 +1,18 @@
 import express from 'express';
-import { getPosts, getPostById, createPost, updatePost, deletePost } from '../controllers/postController.js';
+import { getPosts, getPostById, createPost, updatePost, deletePost, approvePost, getRecentLearnedPosts, getTrendingPosts, getPendingPosts, searchPosts } from '../controllers/postController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
-import preloadRoleMiddleware from '../middlewares/preloadRoleMiddleware.js';;
 
 const router = express.Router();
 
 router.get('/', getPosts);
+router.get('/search', authMiddleware, searchPosts);
+router.get('/trending', getTrendingPosts);
+router.get('/recent', authMiddleware, getRecentLearnedPosts);
+router.get('/pending', authMiddleware, getPendingPosts);
+router.patch('/:id/approve', authMiddleware, approvePost);
 router.get('/:id', getPostById);
 router.post('/', authMiddleware, createPost);
-router.put('/:id', authMiddleware, preloadRoleMiddleware, updatePost);
-router.delete('/:id', authMiddleware, preloadRoleMiddleware, deletePost);
+router.put('/:id', authMiddleware, updatePost);
+router.delete('/:id', authMiddleware, deletePost);
 
 export default router;

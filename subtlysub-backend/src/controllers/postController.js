@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-async function fetchTags(tags) {
+async function syncTags(tags) {
   const existingTags = await prisma.tag.findMany({
     where: {
       name: {
@@ -27,7 +27,7 @@ async function fetchTags(tags) {
 
 export const createPost = async (req, res) => {
   try {
-    const { title, description, tags, cards } = req.body;
+    const { title, description, tags, cards, imageUrl } = req.body;
 
     if (!title) {
       return res.status(400).json({ message: "Title is required" });
@@ -37,25 +37,17 @@ export const createPost = async (req, res) => {
       return res.status(400).json({ message: "Cards are required" });
     }
 
-    const existingTags = await prisma.tag.findMany({
-      where: {
-        name: {
-          in: tags,
-        },
-      },
-    });
-
-    tags = await fetchTags(tags);
-
+    const syncedTags = await syncTags(tags);
     const post = await prisma.post.create({
       data: {
         title,
         description,
+        imageUrl,
         authorId: req.user.id,
         tags: {
-          connect: tags.map((tag) => ({ id: tag.id })),
+          connect: syncedTags.map((tag) => ({ id: tag.id })),
         },
-        words: {
+        cards: {
           create: cards.map((card) => ({
             word: card.word,
             translation: card.translation,
@@ -67,15 +59,52 @@ export const createPost = async (req, res) => {
     res.status(201).json(post);
   } catch (error) {
     res.status(500).json({ message: "Error creating post", error });
+    console.error(error);
   }
 }
 
 export const getPosts = async (req, res) => {
   try {
-    const posts = await prisma.post.findMany({ include: {tags: true, author: true} });
+    const { authorId } = req.query;
+
+    if (authorId) {
+      console.log(authorId)
+      const posts = await prisma.post.findMany({
+        where: {authorId},
+        include: {tags: true, author: true },
+        orderBy: {createdAt: "desc"}
+      });
+
+      res.json(posts);
+    } else {
+      const posts = await prisma.post.findMany({
+        where: {pending: false},
+        include: {tags: true, author: true },
+        orderBy: {createdAt: "desc"}
+      });
+      res.json(posts);
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching posts", error });
+  }
+}
+
+export const getPendingPosts = async (req, res) => {
+  try {
+    const { user } = req;
+
+    if (user.role !== "admin" && user.role !== "moderator") {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    const posts = await prisma.post.findMany({
+      where: { pending: true },
+      include: {tags: true, author: true }
+    });
     res.json(posts);
   } catch (error) {
     res.status(500).json({ message: "Error fetching posts", error });
+    console.error(error);
   }
 }
 
@@ -87,52 +116,65 @@ export const getPostById = async (req, res) => {
       where: {
         id: id,
       },
+      include: {
+        tags: true,
+        author: true,
+        cards: true,
+        linkedColl: true
+      }
     });
 
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
-
-    res.json(post);
+    
+    return res.status(200).json(post);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching post", error });
+    return res.status(500).json({ message: "Error fetching post", error });
   }
 }
 
 export const updatePost = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, tags, cards } = req.body;
-
+    const { title, description, tags, cards, imageUrl } = req.body;
+    const { user } = req;
+    console.log(imageUrl)
     const existingPost = await prisma.post.findUnique({
       where: { id },
-      include: { tags: true, words: true },
+      include: { tags: true, cards: true },
     });
 
     if (!existingPost) {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    if (post.authorId !== req.user.id && req.role !== "admin" && req.role !== "moderator") {
+    if (existingPost.authorId !== user.id && user.role !== "admin" && user.role !== "moderator") {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
-    tags = await fetchTags(tags);
+    const syncedTags = await syncTags(tags);
+    const pending = (user.role !== "admin" && user.role !== "moderator");
+
+    const newCards = cards.map(card => ({ word: card.word, translation: card.translation }));
+    const cardsToDelete = existingPost.cards.filter(card => !cards.some(newCard => newCard.word === card.word)).map(card => card.id);
+    const cardsToCreate = newCards.filter(newCard => !existingPost.cards.some(card => card.word === newCard.word));
 
     const updatedPost = await prisma.post.update({
       where: { id },
       data: {
         title,
         description,
+        pending,
+        imageUrl,
         tags: {
-          set: tags.map((tag) => ({ id: tag.id }))
+          set: syncedTags.map((tag) => ({ id: tag.id }))
         },
-        words: {
-          deleteMany: {},
-          create: cards.map((card) => ({
-            word: card.word,
-            translation: card.translation,
-          })),
+        cards: {
+          deleteMany: {
+            id: { in: cardsToDelete }
+          },
+          create: cardsToCreate
         }
       }
     });
@@ -141,6 +183,7 @@ export const updatePost = async (req, res) => {
 
   } catch (error) {
     res.status(500).json({ message: "Error updating post", error });
+    console.error(error);
   }
 }
 
@@ -152,11 +195,12 @@ export const deletePost = async (req, res) => {
       where: { id },
     });
 
+
     if (!existingPost) {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    if (post.authorId !== req.user.id && req.role !== "admin" && req.role !== "moderator") {
+    if (existingPost.authorId !== req.user.id && req.user.role !== "admin" && req.user.role !== "moderator") {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
@@ -172,5 +216,119 @@ export const deletePost = async (req, res) => {
 
   } catch (error) {
     res.status(500).json({ message: "Error deleting post", error });
+    console.error(error);
+  }
+}
+
+export const approvePost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { user } = req;
+    
+    if (user.role !== "admin" && user.role !== "moderator") {
+      return res.status(403).json({ message: "Unauthorized" });
+    };
+
+    await prisma.post.update({
+      where: { id },
+      data: {
+        pending: false,
+      }
+    });
+
+  } catch (error) {
+    res.json(error);
+  }
+}
+
+export const getRecentLearnedPosts = async (req, res) => {
+  try {
+    const { user } = req;
+
+    const learns = await prisma.learn.findMany({
+      where: { userId: user.id },
+      orderBy: { lastViewed: "desc" },
+      include: { 
+        post: {
+          include: {
+            tags: true, 
+            author: true
+          }
+        }
+      }
+    });
+
+    const posts = learns.map(learn => learn.post);
+
+    res.json(posts);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching posts", error });
+    console.error(error);
+  }
+}
+
+export const getTrendingPosts = async (req, res) => {
+  try {
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+    const posts = await prisma.post.findMany({
+      where: {
+        pending: false,
+        learns: {
+          some: {
+            lastViewed: {
+              gte: oneMonthAgo,
+            },
+          },
+        },
+      },
+      include: {
+        learns: true,
+        tags: true,
+        author: true,
+        _count: {
+          select: {
+            learns: true, 
+          },
+        },
+      },
+      orderBy: {
+        learns: {
+          _count: "desc",
+        },
+      },
+    });
+    return res.json(posts);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching posts", error });
+    console.error(error);
+  }
+}
+
+export const searchPosts = async (req, res) => {
+  const query = req.query.q;
+
+  if (!query) {
+    return res.status(400).json({ message: "Query is required" });
+  }
+
+  try {
+    const posts = await prisma.post.findMany({
+      where: {
+        title: {
+          contains: query,
+          mode: "insensitive",
+        },
+        pending: false,
+      },
+      include: {tags: true, author: true },
+      take: 10
+    });
+
+    res.status(200).json(posts);
+  } catch (error) {
+    console.error("Error searching posts:", error);
+    return res.status(500).json({ message: "Error searching posts", error });
   }
 }
