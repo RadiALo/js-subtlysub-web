@@ -62,7 +62,7 @@ const Header = () => {
           </nav>
 
           <div className="gap-2 items-center min-w-fit flex">
-                <img className="w-6 h-6 rounded-full object-cover" src="/ua.png" alt="UA" />
+                <img className="w-6 h-6 rounded-full object-cover" src={`${import.meta.env.BASE_URL}ua.png`} alt="UA" />
                 <div 
                   onClick={toggleLanguage} 
                   className={`relative inline-flex items-center cursor-pointer w-14 h-8 rounded-full ${isEnglish ? 'bg-purple-500' : 'bg-orange-300'}`}
@@ -71,7 +71,7 @@ const Header = () => {
                     className={`absolute left-1 top-1 w-6 h-6 bg-white rounded-full transition-transform duration-200 ${isEnglish ? 'transform translate-x-6' : ''}`}
                   ></span>
                 </div>
-                <img className="w-6 h-6 rounded-full object-cover" src="/en.png" alt="EN" />
+                <img className="w-6 h-6 rounded-full object-cover" src={`${import.meta.env.BASE_URL}en.png`} alt="EN" />
             </div>
         </div>
       </div>
@@ -94,7 +94,7 @@ const Header = () => {
               </>
             )}
             <li className="flex gap-2 justify-center items-center">
-              <img className="w-6 h-6 rounded-full object-cover" src="/ua.png" alt="UA" />
+              <img className="w-6 h-6 rounded-full object-cover" src={`${import.meta.env.BASE_URL}ua.png`} alt="UA" />
               <div 
                 onClick={toggleLanguage} 
                 className={`relative inline-flex items-center cursor-pointer w-14 h-8 rounded-full ${isEnglish ? 'bg-purple-500' : 'bg-orange-300'}`}
@@ -103,7 +103,7 @@ const Header = () => {
                   className={`absolute left-1 top-1 w-6 h-6 bg-white rounded-full transition-transform duration-200 ${isEnglish ? 'transform translate-x-6' : ''}`}
                 ></span>
               </div>
-              <img className="w-6 h-6 rounded-full object-cover" src="/en.png" alt="EN" />
+              <img className="w-6 h-6 rounded-full object-cover" src={`${import.meta.env.BASE_URL}en.png`} alt="EN" />
             </li>
           </ul>
         </div>

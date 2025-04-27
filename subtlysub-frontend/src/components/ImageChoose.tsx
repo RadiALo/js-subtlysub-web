@@ -4,14 +4,18 @@ import "react-image-crop/dist/ReactCrop.css";
 
 interface ImageChooseProps {
   onUpload: (filePath: string) => void;
-  imageUrl: string;
-  uploaded: boolean;
+  imageUrl?: string;
+  uploaded?: boolean;
 }
 
-const ImageChoose: React.FC<ImageChooseProps> = (props) => {
+const ImageChoose = ({ 
+    onUpload, 
+    imageUrl: propImageUrl = "",
+    uploaded: propUploaded = false
+  } : ImageChooseProps) => {
   const apiUrl = import.meta.env.VITE_API_URL;
-  const [imageUrl, setImageUrl] = useState<string>(props.imageUrl ? props.imageUrl : "");
-  const [uploaded, setUploaded] = useState<boolean>(props.uploaded ? props.uploaded : false);
+  const [imageUrl, setImageUrl] = useState<string>(propImageUrl ? propImageUrl : "");
+  const [uploaded, setUploaded] = useState<boolean>(propUploaded ? propUploaded : false);
   
   const [crop, setCrop] = useState<Crop>({
     unit: "%",
@@ -25,9 +29,9 @@ const ImageChoose: React.FC<ImageChooseProps> = (props) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    setUploaded(props.uploaded ? props.uploaded : uploaded);
-    setImageUrl(props.imageUrl ? props.imageUrl : imageUrl);
-  }, [props]);
+    setUploaded(propUploaded ? propUploaded : uploaded);
+    setImageUrl(propImageUrl ? propImageUrl : imageUrl);
+  }, [propUploaded, propImageUrl, uploaded, imageUrl]);
 
   const uploadImage = async (file: File) => {
     const reader = new FileReader();
@@ -35,18 +39,18 @@ const ImageChoose: React.FC<ImageChooseProps> = (props) => {
     reader.readAsDataURL(file);
   };
 
-  const getCroppedImage = (): Blob | null => {
+  const getCroppedImage = async (): Promise<Blob | null> => {
     if (!image || !canvasRef.current) return null;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     if (!ctx) return null;
-
+  
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
-
+  
     canvas.width = crop.width ? crop.width * scaleX : 0;
     canvas.height = crop.height ? crop.height * scaleY : 0;
-
+  
     ctx.drawImage(
       image,
       (crop.x ?? 0) * scaleX,
@@ -58,11 +62,15 @@ const ImageChoose: React.FC<ImageChooseProps> = (props) => {
       canvas.width,
       canvas.height
     );
-
-    return new Promise<Blob | null>((resolve) => {
-      canvas.toBlob(resolve, "image/jpeg");
+  
+    return await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob((blob) => {
+        resolve(blob ?? null);
+      }, "image/jpeg");
     });
   };
+  
+  
 
   const handleUploadCroppedImage = async () => {
     const croppedBlob = await getCroppedImage();
@@ -80,7 +88,7 @@ const ImageChoose: React.FC<ImageChooseProps> = (props) => {
       const data = await response.json();
       setUploaded(true);
       setImageUrl(data.filePath);
-      props.onUpload(data.filePath);
+      onUpload(data.filePath);
     } catch (error) {
       console.error(error);
     }

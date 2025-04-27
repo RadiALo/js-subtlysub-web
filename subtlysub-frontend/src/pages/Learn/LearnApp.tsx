@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Post } from "../../types/Post";
+import { Card } from "../../types/Card";
 import { useTranslation } from 'react-i18next';
 
 type ProgressItem = {
@@ -112,8 +113,17 @@ const LearnApp = () => {
         return;
       }
       
-      learn.progress = post?.cards.map((card: ProgressItem) => ({ id: card.id, word: card.word, translation: card.translation, learned:
-        (learn.progress && learn.progress.find((c: ProgressItem) => c.id === card.id)?.learned) })) || [];
+      learn.progress = post?.cards.map((card: Card) => {
+        const foundCard = learn.progress?.find((c: ProgressItem) => c.id === card.id);
+
+        return {
+          id: card.id,
+          word: card.word,
+          translation: card.translation,
+          learned: foundCard?.learned ?? false,
+        };
+      }) || [];
+      
 
       setProgress(learn.progress);
 
@@ -136,7 +146,7 @@ const LearnApp = () => {
       id: card.id,
       word: card.word,
       translation: card.translation,
-      learned: card.learned || session.find((c) => c.id === card.id)?.learned,
+      learned: card.learned || session.find((c) => c.id === card.id)?.learned || false,
     }));
 
     console.log(newProgress)

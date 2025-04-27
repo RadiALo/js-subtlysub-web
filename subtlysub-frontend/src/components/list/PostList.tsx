@@ -9,10 +9,16 @@ interface PostListProps {
   title: string;
   authorization?: boolean;
   createLink?: boolean;
-  parameters?: Map<string, string>;
+  parameters?: Map<string, string> | undefined;
 }
 
-const PostList = ({ link, title, authorization = false, createLink = false, parameters = null }: PostListProps) => {
+const PostList = ({
+  link,
+  title,
+  authorization = false,
+  createLink = false,
+  parameters = undefined,
+}: PostListProps) => {
   const { t } = useTranslation();
 
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -45,7 +51,6 @@ const PostList = ({ link, title, authorization = false, createLink = false, para
             })
           : await fetch(`${url.toString()}`);
 
-
         if (!response.ok) {
           throw new Error("Failed to fetch posts");
         }
@@ -72,14 +77,14 @@ const PostList = ({ link, title, authorization = false, createLink = false, para
 
           {createLink && (
             <div
-            className="relative bg-purple-100 rounded-lg shadow-md flex flex-col justify-center items-center
+              className="relative bg-purple-100 rounded-lg shadow-md flex flex-col justify-center items-center
               transition-transform duration-300 ease-out hover:scale-105 hover:shadow-xl
               cursor-pointer p-6 border-purple-400 border-4 border-dashed text-gray-500"
-            onClick={() => navigate('/posts/create')}
-          >
-            <span className="text-4xl">➕</span>
-            <span className="mt-2 font-semibold">{t('createNewPost')}</span>
-          </div>
+              onClick={() => navigate("/posts/create")}
+            >
+              <span className="text-4xl">➕</span>
+              <span className="mt-2 font-semibold">{t("createNewPost")}</span>
+            </div>
           )}
         </div>
       ) : (

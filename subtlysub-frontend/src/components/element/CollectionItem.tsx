@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Collection } from "../types/Collection";
+import { Collection } from "../../types/Collection";
 import { useTranslation } from 'react-i18next';
 
 export interface CollectionProps {

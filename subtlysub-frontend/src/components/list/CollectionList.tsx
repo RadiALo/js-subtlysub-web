@@ -9,16 +9,22 @@ interface CollectionListProps {
   title: string;
   authorization?: boolean;
   createLink?: boolean;
-  parameters?: Map<string, string>;
+  parameters?: Map<string, string> | null;
 }
 
-const CollectionList = ({ link, title, authorization = false, createLink = false, parameters = null }: CollectionListProps) => {
+const CollectionList = ({
+  link,
+  title,
+  authorization = false,
+  createLink = false,
+  parameters = null,
+}: CollectionListProps) => {
   const { t } = useTranslation();
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
-  
+
   const [collections, setCollections] = useState([]);
   const [visibleCount, setVisibleCount] = useState(6);
 
@@ -51,12 +57,11 @@ const CollectionList = ({ link, title, authorization = false, createLink = false
 
         const data = await response.json();
         setCollections(data);
-      }
-      catch (error) {
+      } catch (error) {
         console.error("Error fetching collections: ", error);
       }
     };
-  
+
     fetchCollections();
   }, [apiUrl, link, authorization, token, parameters]);
 
@@ -64,7 +69,7 @@ const CollectionList = ({ link, title, authorization = false, createLink = false
     <div>
       <h1 className="text-3xl font-bold text-white mb-6">{title}</h1>
 
-      {(collections && collections.length > 0) || createLink  ? (
+      {(collections && collections.length > 0) || createLink ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {collections.slice(0, visibleCount).map((collection: Collection) => (
             <CollectionItem key={collection.id} collection={collection} />
@@ -75,18 +80,28 @@ const CollectionList = ({ link, title, authorization = false, createLink = false
               className="relative bg-purple-100 rounded-lg shadow-md flex flex-col justify-center items-center
                 transition-transform duration-300 ease-out hover:scale-105 hover:shadow-xl
                 cursor-pointer p-6 border-4 border-dashed border-purple-400 text-gray-500"
-              onClick={() => navigate('/collections/create')}
+              onClick={() => navigate("/collections/create")}
             >
               <span className="text-4xl">➕</span>
-              <span className="mt-2 font-semibold">{t('createNewCollection')}</span>
+              <span className="mt-2 font-semibold">
+                {t("createNewCollection")}
+              </span>
             </div>
           )}
         </div>
       ) : (
-        <p className="text-white">{t('noCollectionsFound')}</p>
+        <p className="text-white">{t("noCollectionsFound")}</p>
+      )}
+
+      {visibleCount < collections.length && (
+        <div className="m-auto flex justify-center w-60">
+          <button onClick={loadMore} className="primary-button">
+            {t("loadMore")}
+          </button>
+        </div>
       )}
     </div>
   );
-}
+};
 
 export default CollectionList;

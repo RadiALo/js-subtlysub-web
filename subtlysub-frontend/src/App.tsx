@@ -27,7 +27,7 @@ function App() {
   }, []);
 
   return (
-    <Router>
+    <Router basename="/js-subtlysub-web">
       <Header></Header>      
       <div className="py-6 min-h-screen bg-gray-800">
         <Routes>

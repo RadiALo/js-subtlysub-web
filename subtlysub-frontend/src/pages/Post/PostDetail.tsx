@@ -194,7 +194,7 @@ const PostDetail = () => {
 
       console.log(response);
     } else {
-      const response = await fetch(
+      await fetch(
         `${apiUrl}/api/collections/unpin`,
         {
           method: "PATCH",
@@ -238,8 +238,6 @@ const PostDetail = () => {
       }
 
       setPost(newPost);
-
-      console.log(response);
   };
 
   const handlePinToSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -276,6 +274,10 @@ const PostDetail = () => {
 
     if (!response.ok) {
       console.error("Failed to add post to favorite collection");
+      return;
+    }
+
+    if (!post) {
       return;
     }
 

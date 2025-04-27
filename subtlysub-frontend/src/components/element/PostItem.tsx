@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { Post } from "../types/Post";
+import { Post } from "../../types/Post";
 import { useTranslation } from 'react-i18next';
+import { Tag } from "../../types/Tag";
 
 export interface PostProps {
   post: Post;
@@ -43,7 +44,7 @@ const PostItem = ({ post }: PostProps) => {
         <p className="text-gray-700 mt-2 h-14">{post.description.length < 60 ? post.description : `${post.description.slice(0, 60).trim()}...`}</p>
 
         <div className="tag-container">
-          {post.tags.slice(0, 3).map(tag => (
+          {post.tags.slice(0, 3).map((tag: Tag) => (
             <span
               key={tag.id}
               className="tag"

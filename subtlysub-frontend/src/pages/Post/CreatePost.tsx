@@ -157,7 +157,6 @@ const CreatePost = () => {
         />
         
         <ImageChoose onUpload={(path) => {
-          console.log("norm")
           setImageUrl(path)
         }}/>
         

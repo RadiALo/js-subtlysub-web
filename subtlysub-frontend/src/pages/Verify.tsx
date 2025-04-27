@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from "react";
-import { redirect } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
 const Verify = () => {
