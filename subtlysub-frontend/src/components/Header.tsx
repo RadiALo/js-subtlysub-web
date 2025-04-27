@@ -42,36 +42,40 @@ const Header = () => {
           {isMobileMenuOpen ? "✖" : "☰"}
         </button>
 
-        <nav className="hidden lg:block">
-          <ul className="flex space-x-6">
-            {token ? (
-              <>
-                <li><Link to="/home" className="header-button">{t('home')}</Link></li>
-                <li><Link to="/explore" className="header-button">{t('explore')}</Link></li>
-                <li><Link to="/posts/create" className="header-button">{t('create')}</Link></li>
-                <li><button onClick={handleLogout} className="header-accent-button">{t('logout')}</button></li>
-              </>
-            ) : (
-              <>
-                <li><Link to="/login" className="header-button">{t('login')}</Link></li>
-                <li><Link to="/signup" className="header-accent-button">{t('signup')}</Link></li>
-              </>
-            )}
-            <li className="flex gap-2 items-center">
-              <img className="w-6 h-6 rounded-full object-cover" src="/ua.png" alt="UA" />
-              <div 
-                onClick={toggleLanguage} 
-                className={`relative inline-flex items-center cursor-pointer w-14 h-8 rounded-full ${isEnglish ? 'bg-purple-500' : 'bg-orange-300'}`}
-              >
-                <span 
-                  className={`absolute left-1 top-1 w-6 h-6 bg-white rounded-full transition-transform duration-200 ${isEnglish ? 'transform translate-x-6' : ''}`}
-                ></span>
-              </div>
-              <img className="w-6 h-6 rounded-full object-cover" src="/en.png" alt="EN" />
-            </li>
-          </ul>
-        </nav>
+        <div className="hidden lg:flex items-center gap-8">
+          <nav>
+            <ul className="flex space-x-6">
+              {token ? (
+                <>
+                  <li><Link to="/home" className="header-button">{t('home')}</Link></li>
+                  <li><Link to="/explore" className="header-button">{t('explore')}</Link></li>
+                  <li><Link to="/posts/create" className="header-button">{t('create')}</Link></li>
+                  <li><button onClick={handleLogout} className="header-accent-button">{t('logout')}</button></li>
+                </>
+              ) : (
+                <>
+                  <li><Link to="/login" className="header-button">{t('login')}</Link></li>
+                  <li><Link to="/signup" className="header-accent-button">{t('signup')}</Link></li>
+                </>
+              )}
+            </ul>
+          </nav>
+
+          <div className="gap-2 items-center min-w-fit flex">
+                <img className="w-6 h-6 rounded-full object-cover" src="/ua.png" alt="UA" />
+                <div 
+                  onClick={toggleLanguage} 
+                  className={`relative inline-flex items-center cursor-pointer w-14 h-8 rounded-full ${isEnglish ? 'bg-purple-500' : 'bg-orange-300'}`}
+                >
+                  <span 
+                    className={`absolute left-1 top-1 w-6 h-6 bg-white rounded-full transition-transform duration-200 ${isEnglish ? 'transform translate-x-6' : ''}`}
+                  ></span>
+                </div>
+                <img className="w-6 h-6 rounded-full object-cover" src="/en.png" alt="EN" />
+            </div>
+        </div>
       </div>
+
 
       {isMobileMenuOpen && (
         <div className="lg:hidden bg-gray-800 py-4 px-6">
