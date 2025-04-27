@@ -27,7 +27,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 const corsOptions = {
-  origin: 'https://radialo.github.io/js-subtlysub-web',
+  origin: 'https://radialo.github.io',
   credentials: true, 
 };
 
