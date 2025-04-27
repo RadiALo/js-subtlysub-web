@@ -71,5 +71,12 @@
   "search": "Search",
   "noPostsFound": "No posts found",
   "noCollectionsFound": "No collections found",
-  "noResults": "No results"
+  "noResults": "No results",
+  "confirmSassword": "Confirm password",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "passwordRequired": "Password is required",
+  "emailRequired": "Email is required",
+  "usernameRequired": "Username is required",
+  "invalidEmail": "Email is invalid",
+  "invalidCredentials": "Invalid credentials"
 }

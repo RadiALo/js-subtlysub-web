@@ -16,6 +16,16 @@ const LogIn = () => {
     setErrorMsg("");
 
     try {
+      if (!username) {
+        setErrorMsg(t("usernameRequired"));
+        return;
+      }
+
+      if (!password) {
+        setErrorMsg(t("passwordRequired"));
+        return;
+      }
+
       const loginUrl = `${apiUrl}/auth/login`
       const response = await fetch(loginUrl, {
         method: "POST",
@@ -24,7 +34,7 @@ const LogIn = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Invalid credentials!");
+        throw new Error(t("invalidCredentials"));
       }
 
       const data = await response.json();

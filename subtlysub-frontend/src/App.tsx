@@ -16,8 +16,16 @@ import Learn from "./pages/Learn/Learn";
 import LearnApp from "./pages/Learn/LearnApp";
 import './i18n';
 import ProtectedRoute from "./pages/ProtectedRoute";
+import { useEffect } from "react";
+import i18next from "i18next";
 
 function App() {
+
+  useEffect(() => {    
+    const savedLanguage = localStorage.getItem('language');
+    i18next.changeLanguage(savedLanguage || 'en');
+  }, []);
+
   return (
     <Router>
       <Header></Header>      

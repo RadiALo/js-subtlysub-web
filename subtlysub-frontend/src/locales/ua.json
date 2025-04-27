@@ -73,5 +73,12 @@
   "search": "Пошук",
   "noPostsFound": "Постів не знайдено",
   "noCollectionsFound": "Колекцій не знайдено",
-  "noResults": "Немає результатів"
+  "noResults": "Немає результатів",
+  "confirmSassword": "Підьвердіть пароль",
+  "passwordsDoNotMatch": "Паролі не співпадають",
+  "passwordRequired": "Пароль обов'язковий",
+  "emailRequired": "Електронна пошта обов'язкова",
+  "usernameRequired": "Логін обов'язковий",
+  "invalidEmail": "Невірна електронна пошта",
+  "invalidCredentials": "Невірні дані для входу"
 }

@@ -26,11 +26,6 @@ const Header = () => {
     setIsEnglish(i18next.language === 'en');
   }, [t]);
 
-  useEffect(() => {    
-    const savedLanguage = localStorage.getItem('language');
-    i18next.changeLanguage(savedLanguage || 'en');
-  }, []);
-
   return (
     <header className="bg-gray-900 text-white py-4 shadow-md">
       <div className="container mx-auto flex justify-between items-center px-6 gap-4">
