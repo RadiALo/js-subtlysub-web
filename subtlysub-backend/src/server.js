@@ -12,6 +12,8 @@ import progressRoutes from './routes/learnRoutes.js';
 
 const app = express();
 
+app.use(express.json());
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");
@@ -21,10 +23,15 @@ const storage = multer.diskStorage({
   }
 });
 
+
 const upload = multer({ storage: storage });
 
-app.use(express.json());
-app.use(cors());
+const corsOptions = {
+  origin: 'https://radialo.github.io/js-subtlysub-web',
+  credentials: true, 
+};
+
+app.use(cors(corsOptions));
 
 app.post("/upload", upload.single("image"), (req, res) => {
   if (!req.file) {
