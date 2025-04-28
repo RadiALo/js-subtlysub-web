@@ -1,54 +1,58 @@
-# React + TypeScript + Vite
+# SubtlySub
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+SubtlySub is a fullstack web application designed to help users learn English through subtitles.
+Find a post about your favorite TV series, movie, or game — and explore all the specific vocabulary used in that content!
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🔍 Learn from content: Study English vocabulary taken directly from subtitles of series, games, and movies.
+- ✍️ Create posts: Add your own posts with a title, description, image, and a set of vocabulary cards.
+- 📚 Collections: Save posts into personal collections for easier access and learning.
+- 🌐 Multilingual support: Available in English and Ukrainian via react-i18next.
+- ✉️ Email verification: Secure registration and login using SMTP email verification.
+- 🔑 Authentication & Authorization: JWT-based authentication system with multiple user roles (User, Moderator, Admin).
+- 🛡️ Moderation: All user-submitted posts require approval by a Moderator or Admin before becoming publicly available.
 
-## Expanding the ESLint configuration
+## 🛠️ Technology Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Backend
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- Node.js + Express.js
+- Prisma ORM for database management
+- JWT for authentication and role-based access control
+- SMTP integration for email verification
+
+### Frontend
+
+- React (with TypeScript)
+- Vite for blazing fast development
+- Tailwind CSS for modern and responsive styling
+- react-i18next for internationalization
+
+## 🚀 Getting Started
+
+### Backend Setup
+```
+cd subtlysub-backend
+npm install
+npm run start
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+### Frontend Setup
 ```
+cd subtlysub-frontend
+npm install
+npm run dev
+```
+
+## 📅 Roadmap
+
+- 📈 Add AI-generated vocabulary examples
+- 📱 Mobile responsive improvements
+- 🎮 Progress tracking and gamification
+
+## 🤝 Contributing
+
+Contributions are welcome!
+
+Please feel free to submit a Pull Request or open an Issue for any bugs, ideas, or feature requests.
