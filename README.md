@@ -3,6 +3,12 @@
 SubtlySub is a fullstack web application designed to help users learn English through subtitles.
 Find a post about your favorite TV series, movie, or game — and explore all the specific vocabulary used in that content!
 
+## 🚀 Live Demo
+
+👉 Try [SubtlySub Live](https://radialo.github.io/js-subtlysub-web/)
+
+---
+
 ## ✨ Features
 
 - 🔍 Learn from content: Study English vocabulary taken directly from subtitles of series, games, and movies.
