@@ -44,7 +44,7 @@ const SignUp = () => {
         return;
       }
 
-      const registerUrl = `${apiUrl}/auth/register`;
+      const registerUrl = `${apiUrl}/users/register`;
       const response = await fetch(registerUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

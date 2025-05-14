@@ -17,7 +17,7 @@ const Verify = () => {
     setErrorMsg("");
 
     try {
-      const response = await fetch(`${apiUrl}/api/users/verify`, {
+      const response = await fetch(`${apiUrl}/users/verify`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -64,7 +64,7 @@ const Verify = () => {
     setCountdown(30);
 
     try {
-      await fetch(`${apiUrl}/api/users/verify`, {
+      await fetch(`${apiUrl}/users/verify`, {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("token")}`
@@ -92,7 +92,7 @@ const Verify = () => {
   useEffect(() => {
     const getVerificationCode = async () => {
       try {
-        await fetch(`${apiUrl}/api/users/verify`, {
+        await fetch(`${apiUrl}/users/verify`, {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${localStorage.getItem("token")}`

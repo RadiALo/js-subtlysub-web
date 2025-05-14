@@ -26,7 +26,7 @@ const LogIn = () => {
         return;
       }
 
-      const loginUrl = `${apiUrl}/auth/login`
+      const loginUrl = `${apiUrl}/users/login`
       const response = await fetch(loginUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json"},

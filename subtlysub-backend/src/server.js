@@ -3,8 +3,7 @@ import cors from "cors";
 import multer from "multer";
 import path from "path";
 
-import authRoutes from './routes/authRoutes.js';
-import userRoutes from './routes/userRoutes.js';
+import userRoutes from './user/user.routes.js';
 import postRoutes from './routes/postRoutes.js';
 import tagRoutes from './routes/tagRoutes.js';
 import collectionRoutes from './routes/collectionRoutes.js';
@@ -27,7 +26,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 const corsOptions = {
-  origin: 'https://radialo.github.io',
+  origin: process.env.FRONTEND_URL || "http://localhost:5173",
   credentials: true, 
 };
 
@@ -43,9 +42,7 @@ app.post("/upload", upload.single("image"), (req, res) => {
 
 app.use("/uploads", express.static("uploads"));
 
-
-app.use("/auth", authRoutes)
-app.use("/api/users", userRoutes)
+app.use("/users", userRoutes)
 app.use("/api/posts", postRoutes)
 app.use("/api/learn", progressRoutes)
 app.use("/api/tags", tagRoutes)
