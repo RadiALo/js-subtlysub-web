@@ -4,8 +4,8 @@ import multer from "multer";
 import path from "path";
 
 import userRoutes from './user/user.routes.js';
+import tagRoutes from './tag/tag.routes.js';
 import postRoutes from './routes/postRoutes.js';
-import tagRoutes from './routes/tagRoutes.js';
 import collectionRoutes from './routes/collectionRoutes.js';
 import progressRoutes from './routes/learnRoutes.js';
 
