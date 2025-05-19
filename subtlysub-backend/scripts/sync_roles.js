@@ -12,9 +12,6 @@ async function seedRoles() {
     });
   }
 
-  const roles = await prisma.role.findMany();
-  console.log(roles);
-
   await prisma.$disconnect();
 }
 
